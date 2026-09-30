@@ -81,7 +81,7 @@ export const CustomerLove: React.FC = () => {
           Wall of <span className="text-[#e42529]">Love</span>
         </h2>
         <p className="text-[10px] sm:text-xs font-bold uppercase tracking-[0.18em] text-gray-400 mt-1">
-          Hamare customers kya kehte hain
+          What our customers say
         </p>
       </div>
 

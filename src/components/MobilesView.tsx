@@ -323,14 +323,11 @@ export const MobilesView: React.FC<MobilesViewProps> = ({
       {/* Customer Wall of Love — auto-scrolling reviews */}
       <CustomerLove />
 
-      {/* SEO block */}
-      <section className="bg-gradient-to-b from-white to-gray-50 border border-gray-100 rounded-2xl p-6 sm:p-8 space-y-3 mt-8 shadow-sm">
-        <h3 className="text-base sm:text-lg font-bold text-gray-900">
-          Buy Top Mobile Phones at Prices You’ll Love
+      {/* SEO line */}
+      <section className="bg-gradient-to-b from-white to-gray-50 border border-gray-100 rounded-2xl px-6 py-5 sm:p-7 text-center shadow-sm mt-8">
+        <h3 className="font-display text-lg sm:text-2xl font-bold text-gray-900 leading-snug">
+          Buy Top Mobile Phones at Prices You&rsquo;ll Love
         </h3>
-        <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
-          Need to upgrade your <strong className="text-gray-900">mobile phone</strong>? You’re in the right place. When visiting Mauli Mobile, the experience of exploring mobiles is easy, thrilling, and hassle-free. Whether it is the most basic <strong className="text-gray-900">mobile phone</strong> or a smartphone with all the features you need, we have choices that are reasonable across all budgets and lifestyles. Find the <strong className="text-gray-900">latest mobile phones</strong> of the leading brands, easily compare features and get great offers at the same time. When shopping at Mauli Mobile, you enjoy authorized manufacturer warranty, express 3-hour local store delivery, and certified post-purchase support.
-        </p>
       </section>
 
     </div>

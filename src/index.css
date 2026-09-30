@@ -114,6 +114,11 @@ body {
   }
 }
 
+.font-display {
+  font-family: "Fraunces", Georgia, serif;
+  letter-spacing: -0.01em;
+}
+
 .card-entrance {
   animation: var(--animate-fade-up);
 }
