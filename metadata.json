@@ -1,0 +1,6 @@
+{
+  "name": "Mauli Mobile",
+  "description": "Mobile shopping experience for Mauli Mobile with electronics, smartphones, laptops, TVs, appliances, flash sales, and Mauli Care services.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
