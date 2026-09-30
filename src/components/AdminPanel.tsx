@@ -206,7 +206,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
 
       <div className="max-w-[1280px] mx-auto px-3 sm:px-5 py-4 sm:py-6 grid grid-cols-1 md:grid-cols-[220px_1fr] gap-4 items-start">
         {/* Sidebar */}
-        <nav className="md:sticky md:top-[68px] bg-[#141414] rounded-2xl p-2 flex md:flex-col gap-1 overflow-x-auto border border-black shadow-[0_10px_30px_-14px_rgb(0_0_0/0.5)]">
+        <nav className="md:sticky md:top-[68px] bg-[#141414] rounded-2xl p-2 flex md:flex-col gap-1 overflow-x-auto no-scrollbar border border-black shadow-[0_10px_30px_-14px_rgb(0_0_0/0.5)]">
           {tabs.map((t) => (
             <button
               key={t.id}

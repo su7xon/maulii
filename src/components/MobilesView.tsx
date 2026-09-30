@@ -6,6 +6,7 @@ import { LandingHero, LandingSlide } from './LandingHero';
 import { BrandDirectory } from './BrandDirectory';
 import { CategoryNav } from './CategoryNav';
 import { PhoneReviews } from './PhoneReviews';
+import { CustomerLove } from './CustomerLove';
 import {
   NEW_LAUNCHES,
   BEST_SELLING_PHONES,
@@ -318,6 +319,9 @@ export const MobilesView: React.FC<MobilesViewProps> = ({
 
       {/* Phone Reviews reels */}
       <PhoneReviews />
+
+      {/* Customer Wall of Love — auto-scrolling reviews */}
+      <CustomerLove />
 
       {/* SEO block */}
       <section className="bg-gradient-to-b from-white to-gray-50 border border-gray-100 rounded-2xl p-6 sm:p-8 space-y-3 mt-8 shadow-sm">
