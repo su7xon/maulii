@@ -30,6 +30,7 @@ import {
   loadBanners, saveBanners, loadOffers, saveOffers,
   loadLaunches, saveLaunches, loadSlides, saveSlides,
   loadOrders, saveOrders, resetAllAdmin, Order,
+  sanitizeSlides, sanitizeBanners, sanitizeLaunches, sanitizeCategories,
 } from './data/adminStore';
 import { fetchCloudStore, saveCloudKey } from './lib/cloudStore';
 
@@ -60,15 +61,15 @@ export default function App() {
         if (Array.isArray(cloud.products) && cloud.products.length > 0)
           setAdminProducts(cloud.products as Product[]);
         if (Array.isArray(cloud.categories) && cloud.categories.length > 0)
-          setAdminCategories(cloud.categories as Category[]);
+          setAdminCategories(sanitizeCategories(cloud.categories));
         if (Array.isArray(cloud.banners) && cloud.banners.length > 0)
-          setAdminBanners(cloud.banners as Banner[]);
+          setAdminBanners(sanitizeBanners(cloud.banners));
         if (Array.isArray(cloud.offers) && cloud.offers.length > 0)
           setAdminOffers(cloud.offers as BankOffer[]);
         if (Array.isArray(cloud.launches) && cloud.launches.length > 0)
-          setAdminLaunches(cloud.launches as NewLaunchItem[]);
+          setAdminLaunches(sanitizeLaunches(cloud.launches));
         if (Array.isArray(cloud.slides) && cloud.slides.length > 0)
-          setAdminSlides(cloud.slides as LandingSlide[]);
+          setAdminSlides(sanitizeSlides(cloud.slides));
         setCloudReady(true);
       })
       .catch(() => {
@@ -121,6 +122,13 @@ export default function App() {
     setAdminOffers(BANK_OFFERS);
     setAdminLaunches(NEW_LAUNCHES);
     setAdminSlides(LANDING_SLIDES);
+    // Defaults cloud me bhi push — sab visitors pe reset lage
+    void saveCloudKey('mm_admin_products', 'products', PRODUCTS);
+    void saveCloudKey('mm_admin_categories', 'categories', CATEGORIES);
+    void saveCloudKey('mm_admin_banners', 'banners', BANNERS);
+    void saveCloudKey('mm_admin_offers', 'offers', BANK_OFFERS);
+    void saveCloudKey('mm_admin_launches', 'launches', NEW_LAUNCHES);
+    void saveCloudKey('mm_admin_slides', 'slides', LANDING_SLIDES);
   };
 
   // Navigation & View States - default to 'mobiles' as requested in reference screenshots

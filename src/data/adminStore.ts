@@ -23,13 +23,39 @@ function read<T>(key: string, fallback: T): T {
   }
 }
 
+/** Khali/adhuri entries (bina photo wali) hatao — carousel kabhi tootega nahi. */
+function valid<T>(list: T[] | null | undefined, hasImage: (x: T) => boolean): T[] {
+  if (!Array.isArray(list)) return [];
+  return list.filter((x) => x && hasImage(x));
+}
+
+export const sanitizeSlides = (v: unknown): LandingSlide[] => {
+  const clean = valid(v as LandingSlide[], (s) => Boolean(s?.src));
+  return clean.length > 0 ? clean : LANDING_SLIDES;
+};
+
+export const sanitizeBanners = (v: unknown): Banner[] => {
+  const clean = valid(v as Banner[], (b) => Boolean(b?.image));
+  return clean.length > 0 ? clean : BANNERS;
+};
+
+export const sanitizeLaunches = (v: unknown): NewLaunchItem[] => {
+  const clean = valid(v as NewLaunchItem[], (l) => Boolean(l?.image));
+  return clean.length > 0 ? clean : NEW_LAUNCHES;
+};
+
+export const sanitizeCategories = (v: unknown): Category[] => {
+  const clean = valid(v as Category[], (c) => Boolean(c?.imageUrl));
+  return clean.length > 0 ? clean : CATEGORIES;
+};
+
 function write(key: string, val: unknown) {
   try {
     localStorage.setItem(key, JSON.stringify(val));
   } catch { /* noop */ }
 }
 
-export const loadCategories = (): Category[] => read(K.categories, CATEGORIES);
+export const loadCategories = (): Category[] => sanitizeCategories(read(K.categories, null));
 export const saveCategories = (v: Category[]) => write(K.categories, v);
 
 export const loadProducts = (): Product[] => {
@@ -38,16 +64,16 @@ export const loadProducts = (): Product[] => {
 };
 export const saveProducts = (v: Product[]) => write(K.products, v);
 
-export const loadBanners = (): Banner[] => read(K.banners, BANNERS);
+export const loadBanners = (): Banner[] => sanitizeBanners(read(K.banners, null));
 export const saveBanners = (v: Banner[]) => write(K.banners, v);
 
 export const loadOffers = (): BankOffer[] => read(K.offers, BANK_OFFERS);
 export const saveOffers = (v: BankOffer[]) => write(K.offers, v);
 
-export const loadLaunches = (): NewLaunchItem[] => read(K.launches, NEW_LAUNCHES);
+export const loadLaunches = (): NewLaunchItem[] => sanitizeLaunches(read(K.launches, null));
 export const saveLaunches = (v: NewLaunchItem[]) => write(K.launches, v);
 
-export const loadSlides = (): LandingSlide[] => read(K.slides, LANDING_SLIDES);
+export const loadSlides = (): LandingSlide[] => sanitizeSlides(read(K.slides, null));
 export const saveSlides = (v: LandingSlide[]) => write(K.slides, v);
 
 export interface OrderItem { id: string; name: string; brand: string; price: number; quantity: number; image: string; }
