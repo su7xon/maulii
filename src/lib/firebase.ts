@@ -1,5 +1,7 @@
 import { initializeApp, getApps, type FirebaseApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, type Auth } from 'firebase/auth';
+import { getFirestore, type Firestore } from 'firebase/firestore';
+import { getStorage, type FirebaseStorage } from 'firebase/storage';
 
 const config = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY as string | undefined,
@@ -20,6 +22,12 @@ if (isFirebaseConfigured) {
 }
 
 export const auth: Auth | null = app ? getAuth(app) : null;
+
+export const db: Firestore | null = app ? getFirestore(app) : null;
+
+export const storage: FirebaseStorage | null = app ? getStorage(app) : null;
+
+export const isCloudConfigured = Boolean(db && storage);
 
 export const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({ prompt: 'select_account' });

@@ -4,11 +4,10 @@ import { BANNERS } from '../data/mockData';
 import { Banner } from '../types';
 
 interface HeroBannersProps {
-  onBannerClick?: (bannerId: string) => void;
   banners?: Banner[];
 }
 
-export const HeroBanners: React.FC<HeroBannersProps> = ({ onBannerClick, banners }) => {
+export const HeroBanners: React.FC<HeroBannersProps> = ({ banners }) => {
   const list = banners && banners.length > 0 ? banners : BANNERS;
   const [currentIndex, setCurrentIndex] = useState(0);
   const [progress, setProgress] = useState(0);
@@ -42,8 +41,7 @@ export const HeroBanners: React.FC<HeroBannersProps> = ({ onBannerClick, banners
     <div className="relative overflow-hidden rounded-2xl shadow-[0_12px_40px_-12px_rgb(0_0_0/0.35)] border border-white/10 bg-gray-900">
       <div
         key={banner.id}
-        className={`hero-mesh relative w-full min-h-[220px] sm:min-h-[280px] bg-gradient-to-r ${banner.bgGradient} flex items-center overflow-hidden p-5 sm:p-8 cursor-pointer`}
-        onClick={() => onBannerClick?.(banner.id)}
+        className={`hero-mesh relative w-full min-h-[220px] sm:min-h-[280px] bg-gradient-to-r ${banner.bgGradient} flex items-center overflow-hidden p-5 sm:p-8 cursor-default`}
       >
         {/* Glow orbs */}
         <div className="absolute -right-16 -top-16 w-64 h-64 rounded-full bg-white/10 blur-3xl pointer-events-none" />

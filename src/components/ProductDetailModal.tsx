@@ -158,7 +158,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
               </span>
             </div>
 
-            {/* Reliance Best Price Ribbon */}
+            {/* Best Price Ribbon */}
             <div className="mt-2.5 pt-2 border-t border-red-200/60 flex items-center gap-2 flex-wrap">
               <div className="border border-pink-500 rounded px-1.5 py-0.5 bg-pink-50 flex items-center shrink-0">
                 <span className="text-[#d91e63] font-black text-[9px] uppercase tracking-tighter leading-none">
@@ -177,7 +177,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
               Inclusive of all taxes • No Cost EMI starts at ₹{product.emiStartsAt.toLocaleString('en-IN')}/mo
             </p>
 
-            {/* Reliance One Points */}
+            {/* Mauli Points */}
             <div className="mt-2 pt-2 border-t border-red-100 flex items-center justify-between text-xs">
               <span className="flex items-center gap-1.5 text-gray-700">
                 <Gift className="w-3.5 h-3.5 text-[#003380]" />
@@ -221,7 +221,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
           <div className="bg-white p-3 rounded-xl border border-gray-200">
             <div className="flex items-center gap-1.5 text-xs font-bold text-gray-800 mb-2">
               <Tag className="w-4 h-4 text-[#e42529]" />
-              <span>Available Bank Offers</span>
+              <span>Available Mauli Offers</span>
             </div>
 
             <div className="space-y-2">
@@ -245,7 +245,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
             </div>
           </div>
 
-          {/* Reliance resQ Protection Addon */}
+          {/* Mauli Protection Addon */}
           <div className="bg-blue-50/50 p-3 rounded-xl border border-blue-100">
             <label className="flex items-start gap-3 cursor-pointer">
               <input

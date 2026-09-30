@@ -23,7 +23,7 @@ import { Toast } from './components/Toast';
 import { PRODUCTS, CATEGORIES, BEST_SELLING_PHONES, MIDNIGHT_DISCOUNT_PHONES, BANK_OFFERS, BANNERS, NEW_LAUNCHES, NewLaunchItem } from './data/mockData';
 import { LANDING_SLIDES, LandingSlide } from './components/LandingHero';
 import { Product, CartItem, FilterState, Category, Banner, BankOffer } from './types';
-import { Sparkles, ChevronRight, ShieldCheck } from 'lucide-react';
+import { Sparkles, ChevronRight } from 'lucide-react';
 import { AdminPanel } from './components/AdminPanel';
 import {
   loadProducts, saveProducts, loadCategories, saveCategories,
@@ -31,6 +31,7 @@ import {
   loadLaunches, saveLaunches, loadSlides, saveSlides,
   loadOrders, saveOrders, resetAllAdmin, Order,
 } from './data/adminStore';
+import { fetchCloudStore, saveCloudKey } from './lib/cloudStore';
 
 // Full searchable catalog: grid products + carousel phones (dedupe by id)
 const DEFAULT_CATALOG: Product[] = Array.from(
@@ -48,8 +49,40 @@ export default function App() {
   const [adminLaunches, setAdminLaunches] = useState<NewLaunchItem[]>(() => loadLaunches());
   const [adminSlides, setAdminSlides] = useState<LandingSlide[]>(() => loadSlides());
   const [orders, setOrders] = useState<Order[]>(() => loadOrders());
+  const [cloudReady, setCloudReady] = useState(false);
+
+  // Shared Firestore read: sab visitors ko same images/products dikhe
+  useEffect(() => {
+    let live = true;
+    fetchCloudStore()
+      .then((cloud) => {
+        if (!cloud || !live) return;
+        if (Array.isArray(cloud.products) && cloud.products.length > 0)
+          setAdminProducts(cloud.products as Product[]);
+        if (Array.isArray(cloud.categories) && cloud.categories.length > 0)
+          setAdminCategories(cloud.categories as Category[]);
+        if (Array.isArray(cloud.banners) && cloud.banners.length > 0)
+          setAdminBanners(cloud.banners as Banner[]);
+        if (Array.isArray(cloud.offers) && cloud.offers.length > 0)
+          setAdminOffers(cloud.offers as BankOffer[]);
+        if (Array.isArray(cloud.launches) && cloud.launches.length > 0)
+          setAdminLaunches(cloud.launches as NewLaunchItem[]);
+        if (Array.isArray(cloud.slides) && cloud.slides.length > 0)
+          setAdminSlides(cloud.slides as LandingSlide[]);
+        setCloudReady(true);
+      })
+      .catch(() => {
+        if (live) setCloudReady(true);
+      });
+    return () => {
+      live = false;
+    };
+  }, []);
+  void cloudReady;
   const [isAdmin, setIsAdmin] = useState<boolean>(() => {
     try {
+      // Admin sirf /admin URL se khulta hai (koi button/icon nahi)
+      if (window.location.pathname === '/admin') return true;
       return new URLSearchParams(window.location.search).get('admin') !== null;
     } catch {
       return false;
@@ -73,22 +106,10 @@ export default function App() {
     return l.length > 0 ? l : ALL_PRODUCTS.slice(6, 12);
   }, [ALL_PRODUCTS, MID_IDS]);
 
-  const openAdmin = () => {
-    setOrders(loadOrders());
-    setIsAdmin(true);
-    try {
-      const u = new URL(window.location.href);
-      u.searchParams.set('admin', '1');
-      window.history.pushState({}, '', u.toString());
-    } catch { /* noop */ }
-    window.scrollTo({ top: 0 });
-  };
   const closeAdmin = () => {
     setIsAdmin(false);
     try {
-      const u = new URL(window.location.href);
-      u.searchParams.delete('admin');
-      window.history.pushState({}, '', u.toString());
+      window.history.pushState({}, '', '/');
     } catch { /* noop */ }
     window.scrollTo({ top: 0 });
   };
@@ -141,14 +162,20 @@ export default function App() {
     window.scrollTo({ top: 0 });
   };
 
-  // Browser back/forward restores product page
+  // Browser back/forward restores product page + /admin route
   useEffect(() => {
     const onPop = () => {
       try {
+        if (window.location.pathname === '/admin') {
+          setOrders(loadOrders());
+          setIsAdmin(true);
+          return;
+        }
         if (new URLSearchParams(window.location.search).get('admin') !== null) {
           setIsAdmin(true);
           return;
         }
+        setIsAdmin(false);
         const id = new URLSearchParams(window.location.search).get('product');
         setSelectedProduct((id && loadProducts().find((p) => p.id === id)) || null);
         window.scrollTo({ top: 0 });
@@ -420,12 +447,12 @@ export default function App() {
         launches={adminLaunches}
         slides={adminSlides}
         orders={orders}
-        onSaveProducts={(v) => { setAdminProducts(v); saveProducts(v); }}
-        onSaveCategories={(v) => { setAdminCategories(v); saveCategories(v); }}
-        onSaveBanners={(v) => { setAdminBanners(v); saveBanners(v); }}
-        onSaveOffers={(v) => { setAdminOffers(v); saveOffers(v); }}
-        onSaveLaunches={(v) => { setAdminLaunches(v); saveLaunches(v); }}
-        onSaveSlides={(v) => { setAdminSlides(v); saveSlides(v); }}
+        onSaveProducts={(v) => { setAdminProducts(v); saveProducts(v); void saveCloudKey('mm_admin_products', 'products', v); }}
+        onSaveCategories={(v) => { setAdminCategories(v); saveCategories(v); void saveCloudKey('mm_admin_categories', 'categories', v); }}
+        onSaveBanners={(v) => { setAdminBanners(v); saveBanners(v); void saveCloudKey('mm_admin_banners', 'banners', v); }}
+        onSaveOffers={(v) => { setAdminOffers(v); saveOffers(v); void saveCloudKey('mm_admin_offers', 'offers', v); }}
+        onSaveLaunches={(v) => { setAdminLaunches(v); saveLaunches(v); void saveCloudKey('mm_admin_launches', 'launches', v); }}
+        onSaveSlides={(v) => { setAdminSlides(v); saveSlides(v); void saveCloudKey('mm_admin_slides', 'slides', v); }}
         onSaveOrders={(v) => { setOrders(v); saveOrders(v); }}
         onResetAll={handleResetAll}
         onClose={closeAdmin}
@@ -547,7 +574,6 @@ export default function App() {
               window.scrollTo({ top: 0 });
             }}
             onBuyAgain={handleBuyAgain}
-            onOpenAdmin={openAdmin}
             onUseAddress={handleUseAddress}
             onNotify={(m) => showToast(m, 'info')}
           />
@@ -601,8 +627,8 @@ export default function App() {
                 {/* Promotional Hero Banners (Shown when exploring all products) */}
                 {!searchQuery && selectedCategory === 'all' && (
                   <>
-                    <LandingHero slides={adminSlides} onSlideClick={() => setActiveTab('deals')} />
-                    <HeroBanners banners={adminBanners} onBannerClick={() => setActiveTab('deals')} />
+                    <LandingHero slides={adminSlides} />
+                    <HeroBanners banners={adminBanners} />
                     <TrustBar />
                     <DealsCountdown />
                   </>
@@ -744,18 +770,6 @@ export default function App() {
           <path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 2.1-4.2 1.1-7.9-.4-10.7-1.5-2.8-12.5-30.1-17.1-41-4.4-10.8-8.9-9.3-12.5-9.5-3.1-.2-6.7-.2-10.3-.2-3.6 0-9.5 1.4-14.4 6.7-5 5.3-19 18.6-19 45.4 0 26.8 19.5 52.6 22.2 56.3 2.8 3.7 38.4 58.6 93.1 82.2 13 5.6 23.2 9 31.1 11.5 13.1 4.2 25 3.6 34.4 2.2 10.5-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.4-5-3.7-10.5-6.5z" />
         </svg>
       </a>
-      )}
-
-      {/* Admin Panel shortcut — bottom-left shield */}
-      {!isCheckoutOpen && !selectedProduct && (
-        <button
-          onClick={openAdmin}
-          aria-label="Open Admin Panel"
-          title="Admin Panel (Dashboard, Orders, Banners, Offers)"
-          className="fixed bottom-20 md:bottom-6 left-4 md:left-6 z-40 w-[46px] h-[46px] rounded-full bg-[#141414] hover:bg-black text-[#d4af37] flex items-center justify-center shadow-[0_10px_30px_-6px_rgb(0_0_0/0.6)] hover:scale-110 active:scale-95 transition-transform border border-[#d4af37]/40"
-        >
-          <ShieldCheck className="w-5 h-5" />
-        </button>
       )}
 
       {/* AI chatbot — only on product page (replaces WhatsApp float there) */}

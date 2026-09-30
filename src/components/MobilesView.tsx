@@ -62,11 +62,6 @@ export const MobilesView: React.FC<MobilesViewProps> = ({
       {/* Landing banners: S25 FE / Vivo V60 / Oppo F31 */}
       <LandingHero
         slides={slides}
-        onSlideClick={(slide) => {
-          const map: Record<string, number> = { s25fe: 0, vivov60: 1, oppof31: 2 };
-          const phone = bestList[map[slide.id] ?? 0];
-          if (phone) onViewProduct(phone);
-        }}
       />
 
       {/* Category pills below landing banners (nothing pre-selected) */}

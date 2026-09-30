@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
   User, Pencil, MapPin, ShoppingBag, Package,
-  Plus, X, Check, Trash2, ChevronRight, ShieldCheck,
+  Plus, X, Check, Trash2, ChevronRight,
   RotateCcw, LogOut,
 } from 'lucide-react';
 import { Order } from '../data/adminStore';
@@ -36,7 +36,6 @@ interface ProfileViewProps {
   orders: Order[];
   onShopNow: () => void;
   onBuyAgain: (order: Order) => void;
-  onOpenAdmin: () => void;
   onUseAddress: (addr: SavedAddress) => void;
   onNotify?: (msg: string) => void;
 }
@@ -88,7 +87,7 @@ const EMPTY_ADDR: SavedAddress = {
 };
 
 export const ProfileView: React.FC<ProfileViewProps> = ({
-  orders, onShopNow, onBuyAgain, onOpenAdmin, onUseAddress, onNotify,
+  orders, onShopNow, onBuyAgain, onUseAddress, onNotify,
 }) => {
   const [profile, setProfile] = useState<Profile>(loadProfile);
   const [addresses, setAddresses] = useState<SavedAddress[]>(loadAddresses);
@@ -238,12 +237,6 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
       title: 'Your Details',
       sub: profile.name || 'Add name, phone',
       onClick: () => scrollTo(detailsRef),
-    },
-    {
-      icon: <ShieldCheck className="w-5 h-5 text-gray-700" />,
-      title: 'Admin Panel',
-      sub: 'Manage store',
-      onClick: onOpenAdmin,
     },
   ];
 

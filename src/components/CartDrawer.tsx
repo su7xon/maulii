@@ -65,14 +65,14 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
     return acc;
   }, 0);
 
-  // Coupon discount logic
+  // Coupon discount logic (Mauli store coupons)
   let couponDiscount = 0;
-  if (appliedCoupon === 'DIGITAL1000' && totalSellingPrice >= 10000) {
+  if (appliedCoupon === 'MAULI1000' && totalSellingPrice >= 10000) {
     couponDiscount = 1000;
-  } else if (appliedCoupon === 'RELIANCE500') {
+  } else if (appliedCoupon === 'MAULI500') {
     couponDiscount = 500;
-  } else if (appliedCoupon === 'FIRSTBUY') {
-    couponDiscount = Math.round(totalSellingPrice * 0.05);
+  } else if (appliedCoupon === 'MAULIFIRST') {
+    couponDiscount = Math.min(Math.round(totalSellingPrice * 0.05), 2000);
   }
 
   const finalPayable = Math.max(0, totalSellingPrice + warrantyTotal - couponDiscount);
@@ -80,21 +80,21 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
 
   const handleApplyCoupon = (codeToApply?: string) => {
     const code = (codeToApply || couponCode).trim().toUpperCase();
-    if (code === 'DIGITAL1000') {
+    if (code === 'MAULI1000') {
       if (totalSellingPrice < 10000) {
-        setCouponError('DIGITAL1000 requires minimum order of ₹10,000');
+        setCouponError('MAULI1000 requires minimum order of ₹10,000');
       } else {
-        setAppliedCoupon('DIGITAL1000');
+        setAppliedCoupon('MAULI1000');
         setCouponError('');
       }
-    } else if (code === 'RELIANCE500') {
-      setAppliedCoupon('RELIANCE500');
+    } else if (code === 'MAULI500') {
+      setAppliedCoupon('MAULI500');
       setCouponError('');
-    } else if (code === 'FIRSTBUY') {
-      setAppliedCoupon('FIRSTBUY');
+    } else if (code === 'MAULIFIRST') {
+      setAppliedCoupon('MAULIFIRST');
       setCouponError('');
     } else {
-      setCouponError('Invalid coupon code. Try DIGITAL1000 or RELIANCE500');
+      setCouponError('Invalid coupon code. Try MAULI1000, MAULI500 or MAULIFIRST');
     }
   };
 
@@ -141,7 +141,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
             </span>
             <h2 className="text-xl font-black text-gray-900 mb-1">Thank you for your purchase!</h2>
             <p className="text-xs text-gray-600 max-w-xs mb-4">
-              Your order <strong className="text-gray-900">#RD-{Math.floor(100000 + Math.random() * 900000)}</strong> has been booked successfully and will be delivered via Express Courier.
+              Your order <strong className="text-gray-900">#MM-{Math.floor(100000 + Math.random() * 900000)}</strong> has been booked successfully and will be delivered via Express Courier.
             </p>
 
             <div className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3.5 text-left text-xs space-y-2 mb-6">
@@ -316,7 +316,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                       type="text"
                       value={couponCode}
                       onChange={(e) => setCouponCode(e.target.value)}
-                      placeholder="Enter DIGITAL1000 or RELIANCE500"
+                      placeholder="Enter MAULI1000, MAULI500 or MAULIFIRST"
                       className="flex-1 uppercase text-base sm:text-xs font-semibold py-1.5 px-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-[#e42529]"
                     />
                     <button
@@ -331,18 +331,24 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                   )}
 
                   {/* Suggested Coupon Chips */}
-                  <div className="flex gap-1.5 pt-1">
+                  <div className="flex gap-1.5 pt-1 flex-wrap">
                     <button
-                      onClick={() => handleApplyCoupon('DIGITAL1000')}
+                      onClick={() => handleApplyCoupon('MAULI1000')}
                       className="text-[10px] bg-red-50 text-[#e42529] font-bold px-2 py-0.5 rounded border border-red-200 hover:bg-red-100"
                     >
-                      DIGITAL1000 (₹1000 Off)
+                      MAULI1000 (₹1000 Off)
                     </button>
                     <button
-                      onClick={() => handleApplyCoupon('RELIANCE500')}
+                      onClick={() => handleApplyCoupon('MAULI500')}
                       className="text-[10px] bg-red-50 text-[#e42529] font-bold px-2 py-0.5 rounded border border-red-200 hover:bg-red-100"
                     >
-                      RELIANCE500 (₹500 Off)
+                      MAULI500 (₹500 Off)
+                    </button>
+                    <button
+                      onClick={() => handleApplyCoupon('MAULIFIRST')}
+                      className="text-[10px] bg-red-50 text-[#e42529] font-bold px-2 py-0.5 rounded border border-red-200 hover:bg-red-100"
+                    >
+                      MAULIFIRST (5% Off)
                     </button>
                   </div>
                 </div>

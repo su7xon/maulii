@@ -9,6 +9,7 @@ import { Product, Category, Banner, BankOffer } from '../types';
 import { NewLaunchItem } from '../data/mockData';
 import { LandingSlide } from './LandingHero';
 import { Order } from '../data/adminStore';
+import { ImageUpload } from './ImageUpload';
 
 type Tab = 'dashboard' | 'orders' | 'products' | 'categories' | 'banners' | 'offers';
 
@@ -365,9 +366,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                         <div><span className={labelCls}>MRP ₹</span><input type="number" value={editingProduct.mrp} onChange={(e) => setEditingProduct({ ...editingProduct, mrp: Number(e.target.value) })} className={inputCls} /></div>
                       </div>
                       <div>
-                        <span className={labelCls}>Image URL</span>
-                        <input value={editingProduct.image} onChange={(e) => setEditingProduct({ ...editingProduct, image: e.target.value })} className={inputCls} placeholder="https://..." />
-                        {editingProduct.image && <img src={editingProduct.image} alt="preview" className="mt-2 w-24 h-24 object-contain bg-gray-50 border border-gray-200 rounded-2xl" />}
+                        <ImageUpload
+                          label="Product photo"
+                          folder="products"
+                          value={editingProduct.image}
+                          onChange={(url) => setEditingProduct({ ...editingProduct, image: url })}
+                        />
                       </div>
                       <div className="flex gap-5 text-xs font-bold bg-gray-50 rounded-xl px-3 py-2.5">
                         <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked={editingProduct.inStock} onChange={(e) => setEditingProduct({ ...editingProduct, inStock: e.target.checked })} className="w-4 h-4 accent-[#e42529]" /> In stock</label>
@@ -390,9 +394,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                 {categories.map((c) => (
                   <div key={c.id} className="flex items-center gap-3 border border-gray-100 rounded-2xl p-3 hover:border-gray-200 transition">
                     <img src={c.imageUrl} alt={c.name} className="w-12 h-12 rounded-full object-cover border-2 border-gray-100 shrink-0" />
-                    <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div className="flex-1 grid grid-cols-1 gap-2 min-w-0">
                       <input value={c.name} onChange={(e) => props.onSaveCategories(categories.map((x) => x.id === c.id ? { ...x, name: e.target.value } : x))} className={inputCls} aria-label="Category name" />
-                      <input value={c.imageUrl} onChange={(e) => props.onSaveCategories(categories.map((x) => x.id === c.id ? { ...x, imageUrl: e.target.value } : x))} className={inputCls} aria-label="Category image URL" />
+                      <ImageUpload label="Category photo" folder="categories" value={c.imageUrl} onChange={(url) => props.onSaveCategories(categories.map((x) => x.id === c.id ? { ...x, imageUrl: url } : x))} />
                     </div>
                   </div>
                 ))}
@@ -411,7 +415,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                       <img src={s.src} alt={s.alt} className="w-24 h-14 object-cover rounded-xl border border-gray-200 shrink-0 bg-gray-50" />
                       <div className="flex-1 grid grid-cols-1 gap-2">
                         <input value={s.alt} onChange={(e) => props.onSaveSlides(slides.map((x) => x.id === s.id ? { ...x, alt: e.target.value } : x))} className={inputCls} aria-label="Slide text" />
-                        <input value={s.src} onChange={(e) => props.onSaveSlides(slides.map((x) => x.id === s.id ? { ...x, src: e.target.value } : x))} className={inputCls} aria-label="Slide image URL" />
+                        <ImageUpload label="Slide photo" folder="banners" value={s.src} onChange={(url) => props.onSaveSlides(slides.map((x) => x.id === s.id ? { ...x, src: url } : x))} />
                       </div>
                       <button onClick={() => props.onSaveSlides(slides.filter((x) => x.id !== s.id))} className="p-2.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition" aria-label="Delete slide"><Trash2 className="w-4 h-4" /></button>
                     </div>
@@ -436,9 +440,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                         <button onClick={() => props.onSaveBanners(banners.filter((x) => x.id !== b.id))} className="p-2.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition shrink-0" aria-label="Delete banner"><Trash2 className="w-4 h-4" /></button>
                       </div>
                       <input value={b.subtitle} onChange={(e) => props.onSaveBanners(banners.map((x) => x.id === b.id ? { ...x, subtitle: e.target.value } : x))} className={inputCls} aria-label="Banner subtitle" />
-                      <div className="grid grid-cols-2 gap-2.5">
-                        <input value={b.badge} onChange={(e) => props.onSaveBanners(banners.map((x) => x.id === b.id ? { ...x, badge: e.target.value } : x))} className={inputCls} aria-label="Banner badge" />
-                        <input value={b.image} onChange={(e) => props.onSaveBanners(banners.map((x) => x.id === b.id ? { ...x, image: e.target.value } : x))} className={inputCls} aria-label="Banner image URL" />
+                      <div className="grid grid-cols-1 gap-2.5">
+                        <div><span className={labelCls}>Badge</span><input value={b.badge} onChange={(e) => props.onSaveBanners(banners.map((x) => x.id === b.id ? { ...x, badge: e.target.value } : x))} className={inputCls} aria-label="Banner badge" /></div>
+                        <ImageUpload label="Banner photo" folder="banners" value={b.image} onChange={(url) => props.onSaveBanners(banners.map((x) => x.id === b.id ? { ...x, image: url } : x))} />
                       </div>
                     </div>
                   ))}
@@ -451,10 +455,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                   {launches.map((l) => (
                     <div key={l.id} className="flex items-center gap-3 border border-gray-100 rounded-2xl p-3 hover:border-gray-200 transition">
                       <img src={l.image} alt={l.title} className="w-12 h-12 object-contain bg-gray-50 rounded-xl border border-gray-100 shrink-0" />
-                      <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-2">
+                      <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-2">
                         <input value={l.brand} onChange={(e) => props.onSaveLaunches(launches.map((x) => x.id === l.id ? { ...x, brand: e.target.value } : x))} className={inputCls} aria-label="Launch brand" />
                         <input value={l.title} onChange={(e) => props.onSaveLaunches(launches.map((x) => x.id === l.id ? { ...x, title: e.target.value } : x))} className={inputCls} aria-label="Launch title" />
-                        <input value={l.image} onChange={(e) => props.onSaveLaunches(launches.map((x) => x.id === l.id ? { ...x, image: e.target.value } : x))} className={inputCls} aria-label="Launch image URL" />
+                        <div className="sm:col-span-2">
+                          <ImageUpload label="Launch photo" folder="launches" value={l.image} onChange={(url) => props.onSaveLaunches(launches.map((x) => x.id === l.id ? { ...x, image: url } : x))} />
+                        </div>
                       </div>
                       <button onClick={() => props.onSaveLaunches(launches.filter((x) => x.id !== l.id))} className="p-2.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition shrink-0" aria-label="Delete launch"><Trash2 className="w-4 h-4" /></button>
                     </div>

@@ -723,28 +723,22 @@ export const PRODUCTS: Product[] = [
 
 export const BANK_OFFERS: BankOffer[] = [
   {
-    bank: 'HDFC Bank',
-    offer: 'Flat ₹3,000 Instant Discount + 6 Months No Cost EMI on Credit Cards',
-    code: 'HDFC3000',
-    minAmount: 30000,
-  },
-  {
-    bank: 'ICICI Bank',
-    offer: 'Up to ₹5,000 Instant Cashback on Credit & Debit Card EMI',
-    code: 'ICICICASH5K',
-    minAmount: 40000,
-  },
-  {
-    bank: 'PNB Cards',
-    offer: '7.5% Instant Discount up to ₹2,000 with PNB Credit Cards',
-    code: 'PNB2K',
-    minAmount: 15000,
-  },
-  {
-    bank: 'SBI Card',
-    offer: '10% Instant Discount up to ₹1,750 on minimum cart ₹10,000',
-    code: 'SBISPECIAL',
+    bank: 'Mauli Mobile',
+    offer: 'Flat ₹1,000 OFF on orders above ₹10,000 — auto-applied at cart',
+    code: 'MAULI1000',
     minAmount: 10000,
+  },
+  {
+    bank: 'Mauli Mobile',
+    offer: 'Flat ₹500 OFF on any mobile — no minimum order value',
+    code: 'MAULI500',
+    minAmount: 0,
+  },
+  {
+    bank: 'Mauli Mobile',
+    offer: 'Extra 5% OFF on your first order (up to ₹2,000)',
+    code: 'MAULIFIRST',
+    minAmount: 0,
   },
 ];
 

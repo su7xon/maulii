@@ -28,12 +28,10 @@ export const LANDING_SLIDES: LandingSlide[] = [
 
 interface LandingHeroProps {
   slides?: LandingSlide[];
-  onSlideClick?: (slide: LandingSlide) => void;
 }
 
 export const LandingHero: React.FC<LandingHeroProps> = ({
   slides = LANDING_SLIDES,
-  onSlideClick,
 }) => {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -61,10 +59,9 @@ export const LandingHero: React.FC<LandingHeroProps> = ({
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      <button
+      <div
         key={slide.id}
-        onClick={() => onSlideClick?.(slide)}
-        className="block w-full cursor-pointer card-entrance"
+        className="block w-full cursor-default card-entrance"
         aria-label={slide.alt}
       >
         <img
@@ -73,7 +70,7 @@ export const LandingHero: React.FC<LandingHeroProps> = ({
           className="w-full h-auto object-cover aspect-[16/10] sm:aspect-[16/5] bg-[#f4f6f9]"
           loading="eager"
         />
-      </button>
+      </div>
 
       {slides.length > 1 && (
         <>
