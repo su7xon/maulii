@@ -13,16 +13,19 @@ export const LANDING_SLIDES: LandingSlide[] = [
   {
     id: 's25fe',
     src: '/banners/banner-s25fe.png',
+    mobileSrc: '/banners/banner-mobile-s25fe.png',
     alt: 'Galaxy S25 FE - Galaxy AI',
   },
   {
     id: 'vivov60',
     src: '/banners/banner-vivo-v60.png',
+    mobileSrc: '/banners/banner-mobile-vivo-v60.png',
     alt: 'Vivo V60 Co-engineered with Zeiss - Sale starts now',
   },
   {
     id: 'oppof31',
     src: '/banners/banner-oppo-f31.png',
+    mobileSrc: '/banners/banner-mobile-oppo-f31.png',
     alt: 'Oppo F31 Series 5G - Durable Champion',
   },
 ];
