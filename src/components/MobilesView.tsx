@@ -323,13 +323,6 @@ export const MobilesView: React.FC<MobilesViewProps> = ({
       {/* Customer Wall of Love — auto-scrolling reviews */}
       <CustomerLove />
 
-      {/* SEO line */}
-      <section className="bg-gradient-to-b from-white to-gray-50 border border-gray-100 rounded-2xl px-6 py-5 sm:p-7 text-center shadow-sm mt-8">
-        <h3 className="font-display text-lg sm:text-2xl font-bold text-gray-900 leading-snug">
-          Buy Top Mobile Phones at Prices You&rsquo;ll Love
-        </h3>
-      </section>
-
     </div>
   );
 };

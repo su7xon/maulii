@@ -1,5 +1,5 @@
 import React from 'react';
-import { Phone } from 'lucide-react';
+import { PhoneCall } from 'lucide-react';
 
 const PAYMENT_BADGES: React.ReactNode[] = [
   <span key="visa" className="text-[#1a1f71] text-2xl font-black italic tracking-tighter">
@@ -65,10 +65,10 @@ export const HelpPaymentStrip: React.FC = () => {
         <div className="md:col-span-3 flex items-start gap-3.5">
           <a
             href="tel:8237305111"
-            className="w-12 h-12 rounded-lg bg-[#ff8a00] flex items-center justify-center shrink-0 shadow-[0_8px_20px_-6px_rgb(255_138_0/0.6)] hover:scale-105 transition-transform"
+            className="w-12 h-12 rounded-full bg-gradient-to-br from-[#f03236] to-[#7a0d10] flex items-center justify-center shrink-0 shadow-[0_8px_20px_-6px_rgb(228_37_41/0.6)] ring-2 ring-[#e42529]/20 hover:scale-105 transition-transform"
             aria-label="Call us"
           >
-            <Phone className="w-6 h-6 text-white fill-white" />
+            <PhoneCall className="w-6 h-6 text-white" />
           </a>
           <div>
             <a href="tel:8237305111" className="text-[15px] font-bold text-gray-900 hover:text-[#e42529] transition-colors">
