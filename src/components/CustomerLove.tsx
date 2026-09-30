@@ -48,7 +48,7 @@ const NOTES: LoveNote[] = [
 ];
 
 const LoveCard: React.FC<{ note: LoveNote }> = ({ note }) => (
-  <div className="w-[280px] sm:w-[340px] shrink-0 bg-white rounded-2xl border border-red-100 shadow-[0_10px_30px_-12px_rgb(228_37_41/0.25)] p-4 sm:p-5 flex flex-col">
+  <div className="w-[280px] sm:w-[340px] shrink-0 bg-white rounded-2xl border border-gray-100 shadow-[0_2px_16px_-8px_rgb(0_0_0/0.12)] p-4 sm:p-5 flex flex-col">
     <div className="flex gap-0.5">
       {Array.from({ length: 5 }).map((_, i) => (
         <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
@@ -101,10 +101,6 @@ export const CustomerLove: React.FC = () => {
           ))}
         </div>
       </div>
-
-      <p className="text-[11px] text-gray-400 font-medium mt-2.5 text-center">
-        10,000+ happy customers • 4.8★ average rating
-      </p>
     </section>
   );
 };
