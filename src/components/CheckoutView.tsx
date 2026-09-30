@@ -75,9 +75,9 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
   const [form, setForm] = useState<Address>({
     name: saved?.name || '',
     phone: saved?.phone || '',
-    pincode: saved?.pincode || defaultPincode,
+    pincode: saved?.pincode || '',
     address: saved?.address || '',
-    city: saved?.city || defaultCity,
+    city: saved?.city || '',
     state: saved?.state || 'Maharashtra',
     type: saved?.type || 'Home',
   });
