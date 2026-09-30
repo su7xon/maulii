@@ -67,7 +67,7 @@ export const LandingHero: React.FC<LandingHeroProps> = ({
         <img
           src={slide.src}
           alt={slide.alt}
-          className="w-full h-auto object-cover aspect-[22/7] sm:aspect-[16/5] bg-[#f4f6f9]"
+          className="w-full h-auto object-cover aspect-[16/10] sm:aspect-[16/5] bg-[#f4f6f9]"
           loading="eager"
         />
       </div>
