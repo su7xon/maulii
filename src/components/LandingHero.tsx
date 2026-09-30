@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export interface LandingSlide {
@@ -66,6 +66,17 @@ export const LandingHero: React.FC<LandingHeroProps> = ({
     setIndex((p) => (p - 1 + slides.length) % slides.length);
   };
 
+  // Swipe (touch + mouse drag): ungli se banners badlo
+  const swipeX = useRef<number | null>(null);
+  const swipeEnd = (clientX: number) => {
+    if (swipeX.current === null) return;
+    const dx = swipeX.current - clientX;
+    swipeX.current = null;
+    if (Math.abs(dx) < 40 || slides.length < 2) return;
+    if (dx > 0) next();
+    else prev();
+  };
+
   useEffect(() => {
     if (paused || slides.length < 2) return;
     const t = setInterval(next, 4500);
@@ -79,9 +90,13 @@ export const LandingHero: React.FC<LandingHeroProps> = ({
 
   return (
     <div
-      className="relative w-full overflow-hidden border-x border-b border-gray-100 bg-white group"
+      className="relative w-full overflow-hidden border-x border-b border-gray-100 bg-white group touch-pan-y select-none"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
+      onTouchStart={(e) => { swipeX.current = e.touches[0].clientX; }}
+      onTouchEnd={(e) => { swipeEnd(e.changedTouches[0].clientX); }}
+      onMouseDown={(e) => { swipeX.current = e.clientX; }}
+      onMouseUp={(e) => { swipeEnd(e.clientX); }}
     >
       <div
         key={slide.id}
