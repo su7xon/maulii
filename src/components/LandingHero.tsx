@@ -5,6 +5,7 @@ export interface LandingSlide {
   id: string;
   src: string;
   alt: string;
+  mobileSrc?: string;
   productId?: string;
 }
 
@@ -35,6 +36,24 @@ export const LandingHero: React.FC<LandingHeroProps> = ({
 }) => {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [isDesktop, setIsDesktop] = useState<boolean>(() => {
+    try {
+      return window.matchMedia('(min-width: 640px)').matches;
+    } catch {
+      return false;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      const mq = window.matchMedia('(min-width: 640px)');
+      const onChange = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
+      mq.addEventListener('change', onChange);
+      return () => mq.removeEventListener('change', onChange);
+    } catch {
+      return;
+    }
+  }, []);
 
   const next = useCallback(() => {
     setIndex((p) => (p + 1) % slides.length);
@@ -52,6 +71,8 @@ export const LandingHero: React.FC<LandingHeroProps> = ({
 
   if (slides.length === 0) return null;
   const slide = slides[index];
+  // Desktop pe laptop wali photo, mobile pe mobile wali (na ho to desktop wali fallback)
+  const imgSrc = !isDesktop && slide.mobileSrc ? slide.mobileSrc : slide.src;
 
   return (
     <div
@@ -65,7 +86,7 @@ export const LandingHero: React.FC<LandingHeroProps> = ({
         aria-label={slide.alt}
       >
         <img
-          src={slide.src}
+          src={imgSrc}
           alt={slide.alt}
           className="w-full h-auto object-cover aspect-[16/10] sm:aspect-[16/5] bg-[#f4f6f9]"
           loading="eager"

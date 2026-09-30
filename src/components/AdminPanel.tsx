@@ -415,7 +415,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                       <img src={s.src} alt={s.alt} className="w-24 h-14 object-cover rounded-xl border border-gray-200 shrink-0 bg-gray-50" />
                       <div className="flex-1 grid grid-cols-1 gap-2">
                         <input value={s.alt} onChange={(e) => props.onSaveSlides(slides.map((x) => x.id === s.id ? { ...x, alt: e.target.value } : x))} className={inputCls} aria-label="Slide text" />
-                        <ImageUpload label="Slide photo" folder="banners" value={s.src} onChange={(url) => props.onSaveSlides(slides.map((x) => x.id === s.id ? { ...x, src: url } : x))} />
+                        <ImageUpload label="Laptop photo (16:5)" folder="banners" value={s.src} onChange={(url) => props.onSaveSlides(slides.map((x) => x.id === s.id ? { ...x, src: url } : x))} />
+                        <ImageUpload label="Mobile photo (16:10, na ho to laptop wali lagegi)" folder="banners-mobile" value={s.mobileSrc || ''} onChange={(url) => props.onSaveSlides(slides.map((x) => x.id === s.id ? { ...x, mobileSrc: url } : x))} />
                       </div>
                       <button onClick={() => props.onSaveSlides(slides.filter((x) => x.id !== s.id))} className="p-2.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition" aria-label="Delete slide"><Trash2 className="w-4 h-4" /></button>
                     </div>
