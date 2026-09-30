@@ -14,6 +14,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import { CartItem } from '../types';
+import { COUPONS, calcCouponDiscount, validateCoupon } from '../lib/coupons';
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -65,36 +66,20 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
     return acc;
   }, 0);
 
-  // Coupon discount logic (Mauli store coupons)
-  let couponDiscount = 0;
-  if (appliedCoupon === 'MAULI1000' && totalSellingPrice >= 10000) {
-    couponDiscount = 1000;
-  } else if (appliedCoupon === 'MAULI500') {
-    couponDiscount = 500;
-  } else if (appliedCoupon === 'MAULIFIRST') {
-    couponDiscount = Math.min(Math.round(totalSellingPrice * 0.05), 2000);
-  }
+  // Coupon discount logic (shared helper — Checkout same use karta)
+  const couponDiscount = calcCouponDiscount(appliedCoupon, totalSellingPrice);
 
   const finalPayable = Math.max(0, totalSellingPrice + warrantyTotal - couponDiscount);
   const totalSavings = productDiscount + couponDiscount;
 
   const handleApplyCoupon = (codeToApply?: string) => {
     const code = (codeToApply || couponCode).trim().toUpperCase();
-    if (code === 'MAULI1000') {
-      if (totalSellingPrice < 10000) {
-        setCouponError('MAULI1000 requires minimum order of ₹10,000');
-      } else {
-        setAppliedCoupon('MAULI1000');
-        setCouponError('');
-      }
-    } else if (code === 'MAULI500') {
-      setAppliedCoupon('MAULI500');
-      setCouponError('');
-    } else if (code === 'MAULIFIRST') {
-      setAppliedCoupon('MAULIFIRST');
-      setCouponError('');
+    const err = validateCoupon(code, totalSellingPrice);
+    if (err) {
+      setCouponError(err);
     } else {
-      setCouponError('Invalid coupon code. Try MAULI1000, MAULI500 or MAULIFIRST');
+      setAppliedCoupon(code);
+      setCouponError('');
     }
   };
 
@@ -332,24 +317,15 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
 
                   {/* Suggested Coupon Chips */}
                   <div className="flex gap-1.5 pt-1 flex-wrap">
-                    <button
-                      onClick={() => handleApplyCoupon('MAULI1000')}
-                      className="text-[10px] bg-red-50 text-[#e42529] font-bold px-2 py-0.5 rounded border border-red-200 hover:bg-red-100"
-                    >
-                      MAULI1000 (₹1000 Off)
-                    </button>
-                    <button
-                      onClick={() => handleApplyCoupon('MAULI500')}
-                      className="text-[10px] bg-red-50 text-[#e42529] font-bold px-2 py-0.5 rounded border border-red-200 hover:bg-red-100"
-                    >
-                      MAULI500 (₹500 Off)
-                    </button>
-                    <button
-                      onClick={() => handleApplyCoupon('MAULIFIRST')}
-                      className="text-[10px] bg-red-50 text-[#e42529] font-bold px-2 py-0.5 rounded border border-red-200 hover:bg-red-100"
-                    >
-                      MAULIFIRST (5% Off)
-                    </button>
+                    {COUPONS.map((c) => (
+                      <button
+                        key={c.code}
+                        onClick={() => handleApplyCoupon(c.code)}
+                        className="text-[10px] bg-red-50 text-[#e42529] font-bold px-2 py-0.5 rounded border border-red-200 hover:bg-red-100"
+                      >
+                        {c.short}
+                      </button>
+                    ))}
                   </div>
                 </div>
               )}

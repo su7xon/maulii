@@ -20,12 +20,6 @@ export const CATEGORIES: Category[] = [
     imageUrl: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=200&auto=format&fit=crop&q=80',
   },
   {
-    id: 'airconditioners',
-    name: 'Air Conditioners',
-    icon: 'Wind',
-    imageUrl: 'https://images.unsplash.com/photo-1615874959474-d609969a20ed?w=200&auto=format&fit=crop&q=80',
-  },
-  {
     id: 'audio',
     name: 'Audio',
     icon: 'Headphones',
@@ -42,24 +36,6 @@ export const CATEGORIES: Category[] = [
     name: 'Smart Wearables',
     icon: 'Watch',
     imageUrl: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&auto=format&fit=crop&q=80',
-  },
-  {
-    id: 'smallappliances',
-    name: 'Small Appliances',
-    icon: 'Coffee',
-    imageUrl: 'https://images.unsplash.com/photo-1556911220-bff31c812dba?w=200&auto=format&fit=crop&q=80',
-  },
-  {
-    id: 'refrigerators',
-    name: 'Refrigerators',
-    icon: 'Refrigerator',
-    imageUrl: 'https://images.unsplash.com/photo-1571175443880-49e1d25b2bc5?w=200&auto=format&fit=crop&q=80',
-  },
-  {
-    id: 'personalcare',
-    name: 'Personal Care',
-    icon: 'Sparkles',
-    imageUrl: 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=200&auto=format&fit=crop&q=80',
   },
 ];
 

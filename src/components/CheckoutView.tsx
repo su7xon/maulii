@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { CartItem } from '../types';
 import { loadOrders, saveOrders } from '../data/adminStore';
+import { COUPONS, calcCouponDiscount, validateCoupon } from '../lib/coupons';
 
 interface CheckoutViewProps {
   cartItems: CartItem[];
@@ -90,6 +91,9 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
   const [payError, setPayError] = useState('');
   const [placing, setPlacing] = useState(false);
   const [orderId] = useState(() => `MM-${Math.floor(100000 + Math.random() * 900000)}`);
+  const [couponCode, setCouponCode] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
+  const [couponError, setCouponError] = useState('');
 
   // Totals
   const mrpTotal = cartItems.reduce((a, i) => a + i.product.mrp * i.quantity, 0);
@@ -98,7 +102,8 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
     if (!i.selectedWarranty) return a;
     return a + (i.product.price > 50000 ? 2499 : 1299) * i.quantity;
   }, 0);
-  const total = subtotal + warrantyTotal;
+  const couponDiscount = calcCouponDiscount(appliedCoupon, subtotal);
+  const total = Math.max(0, subtotal + warrantyTotal - couponDiscount);
   const savings = mrpTotal - subtotal;
   const eta = new Date(Date.now() + 5 * 864e5).toLocaleDateString('en-IN', {
     weekday: 'short', day: 'numeric', month: 'short',
@@ -215,6 +220,18 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
   const finish = () => {
     onClearCart();
     onOrderDone();
+  };
+
+  const applyCoupon = (raw?: string) => {
+    const code = (raw ?? couponCode).trim().toUpperCase();
+    const err = validateCoupon(code, subtotal);
+    if (err) {
+      setCouponError(err);
+    } else {
+      setAppliedCoupon(code);
+      setCouponCode('');
+      setCouponError('');
+    }
   };
 
   if (cartItems.length === 0 && step !== 'success') {
@@ -496,6 +513,44 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
                   </div>
                 </section>
 
+                {/* Coupon */}
+                <section className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                  <div className="p-3.5 sm:p-4">
+                    <div className="flex items-center gap-1.5 text-xs sm:text-sm font-extrabold text-gray-800 mb-2">
+                      <span className="w-6 h-6 rounded-lg bg-red-50 border border-red-100 flex items-center justify-center text-[#e42529] text-xs font-black">%</span>
+                      Apply Coupon / Promo Code
+                    </div>
+                    {appliedCoupon ? (
+                      <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-2.5 flex items-center justify-between text-xs">
+                        <span className="text-emerald-800 font-bold">✓ '{appliedCoupon}' applied (−₹{couponDiscount.toLocaleString('en-IN')})</span>
+                        <button onClick={() => { setAppliedCoupon(null); setCouponError(''); }}
+                          className="text-[11px] text-red-600 font-bold hover:underline shrink-0 ml-2">Remove</button>
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        <div className="flex gap-2">
+                          <input value={couponCode} onChange={(e) => { setCouponCode(e.target.value); setCouponError(''); }}
+                            placeholder="ENTER MAULI1000, MAULI500 OR MAULIFIRST"
+                            className="flex-1 uppercase text-xs font-semibold py-2.5 px-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#e42529] min-w-0" />
+                          <button onClick={() => applyCoupon()}
+                            className="bg-[#e42529] hover:bg-[#c21418] text-white px-5 py-2.5 rounded-xl text-xs font-bold transition-colors shrink-0 active:scale-95">
+                            Apply
+                          </button>
+                        </div>
+                        {couponError && <p className="text-[11px] text-red-600 font-medium">{couponError}</p>}
+                        <div className="flex gap-1.5 flex-wrap">
+                          {COUPONS.map((c) => (
+                            <button key={c.code} onClick={() => applyCoupon(c.code)}
+                              className="text-[10px] bg-red-50 text-[#e42529] font-bold px-2 py-1 rounded border border-red-200 hover:bg-red-100">
+                              {c.short}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </section>
+
                 {/* Items */}
                 <section className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                   <div className="px-4 py-3 border-b border-gray-100">
@@ -539,6 +594,12 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
                   <span>+ ₹{warrantyTotal.toLocaleString('en-IN')}</span>
                 </div>
               )}
+              {couponDiscount > 0 && (
+                <div className="flex justify-between text-emerald-700 font-semibold">
+                  <span>Coupon ({appliedCoupon})</span>
+                  <span>− ₹{couponDiscount.toLocaleString('en-IN')}</span>
+                </div>
+              )}
               <div className="flex justify-between text-gray-600">
                 <span>Delivery</span>
                 <span className="font-bold text-emerald-600">FREE</span>
@@ -553,6 +614,10 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
             </div>
             {step === 'payment' && (
               <div className="p-4 pt-0">
+                <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 mb-2.5 text-[11px] font-bold text-amber-800">
+                  <span className="text-sm">🎁</span>
+                  <span>Cover + Mobile Safety Guard FREE from us on this order!</span>
+                </div>
                 <button onClick={placeOrder} disabled={placing}
                   className="w-full bg-[#e42529] hover:bg-[#c21418] disabled:opacity-70 text-white py-3 rounded-xl text-sm font-bold shadow flex items-center justify-center gap-2 active:scale-[0.99]">
                   {placing ? <><Loader2 className="w-4 h-4 animate-spin" /> Processing…</> : payMethod === 'cod' ? `Place Order • ₹${total.toLocaleString('en-IN')}` : `Pay ₹${total.toLocaleString('en-IN')}`}
