@@ -2,6 +2,7 @@ import React from 'react';
 import { CATEGORIES } from '../data/mockData';
 import { Category, Product } from '../types';
 import { ChevronRight, Sparkles } from 'lucide-react';
+import { onImgError } from '../lib/imgFallback';
 
 interface CategoriesViewProps {
   onSelectCategory: (categoryId: string) => void;
@@ -83,6 +84,7 @@ export const CategoriesView: React.FC<CategoriesViewProps> = ({
                 <img
                   src={prod.image}
                   alt={prod.name}
+                  onError={onImgError}
                   className="w-12 h-12 object-contain bg-gray-50 rounded-lg p-1 shrink-0"
                 />
                 <div>

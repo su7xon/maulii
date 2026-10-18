@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Header } from './components/Header';
-import { CategoryNav } from './components/CategoryNav';
 import { MobilesView } from './components/MobilesView';
 import { HeroBanners } from './components/HeroBanners';
 import { LandingHero } from './components/LandingHero';
@@ -16,14 +15,14 @@ import { DealsView } from './components/DealsView';
 import { CheckoutView } from './components/CheckoutView';
 import { ProfileView, SavedAddress } from './components/ProfileView';
 import { ChatBot } from './components/ChatBot';
-import { FilterBar } from './components/FilterBar';
 import { Footer } from './components/Footer';
 import { HelpPaymentStrip } from './components/HelpPaymentStrip';
 import { Toast } from './components/Toast';
+import { SortDropdown } from './components/SortDropdown';
+import { RecentlyViewed } from './components/RecentlyViewed';
 import { PRODUCTS, CATEGORIES, BEST_SELLING_PHONES, MIDNIGHT_DISCOUNT_PHONES, BANK_OFFERS, BANNERS, NEW_LAUNCHES, NewLaunchItem } from './data/mockData';
 import { LANDING_SLIDES, LandingSlide } from './components/LandingHero';
 import { Product, CartItem, FilterState, Category, Banner, BankOffer } from './types';
-import { Sparkles, ChevronRight } from 'lucide-react';
 import { AdminPanel } from './components/AdminPanel';
 import {
   loadProducts, saveProducts, loadCategories, saveCategories,
@@ -31,8 +30,10 @@ import {
   loadLaunches, saveLaunches, loadSlides, saveSlides,
   loadOrders, saveOrders, resetAllAdmin, Order,
   sanitizeSlides, sanitizeBanners, sanitizeLaunches, sanitizeCategories,
+  fixProductImages, fixImageUrl,
 } from './data/adminStore';
 import { fetchCloudStore, saveCloudKey } from './lib/cloudStore';
+import { dedupeToRepresentatives } from './lib/variants';
 
 // Full searchable catalog: grid products + carousel phones (dedupe by id)
 const DEFAULT_CATALOG: Product[] = Array.from(
@@ -59,7 +60,7 @@ export default function App() {
       .then((cloud) => {
         if (!cloud || !live) return;
         if (Array.isArray(cloud.products) && cloud.products.length > 0)
-          setAdminProducts(cloud.products as Product[]);
+          setAdminProducts(fixProductImages(cloud.products as Product[]));
         if (Array.isArray(cloud.categories) && cloud.categories.length > 0)
           setAdminCategories(sanitizeCategories(cloud.categories));
         if (Array.isArray(cloud.banners) && cloud.banners.length > 0)
@@ -156,6 +157,13 @@ export default function App() {
   // Open product as full page: shareable URL + scroll top
   const handleSelectProduct = (p: Product) => {
     setSelectedProduct(p);
+    setRecentIds((prev) => {
+      const next = [p.id, ...prev.filter((id) => id !== p.id)].slice(0, 10);
+      try {
+        localStorage.setItem('mm_recently_viewed', JSON.stringify(next));
+      } catch { /* noop */ }
+      return next;
+    });
     try {
       window.history.pushState({ productId: p.id }, '', `?product=${p.id}`);
     } catch { /* noop */ }
@@ -204,9 +212,25 @@ export default function App() {
     ];
     try {
       const saved = localStorage.getItem('rd_cart');
-      return saved ? JSON.parse(saved) : fallback;
+      if (!saved) return fallback;
+      const parsed = JSON.parse(saved) as CartItem[];
+      if (!Array.isArray(parsed)) return fallback;
+      return parsed.map((it) =>
+        it?.product ? { ...it, product: { ...it.product, image: fixImageUrl(it.product.image, it.product.id) } } : it
+      );
     } catch {
       return fallback;
+    }
+  });
+
+  // Recently viewed (persisted, max 10)
+  const [recentIds, setRecentIds] = useState<string[]>(() => {
+    try {
+      const raw = localStorage.getItem('mm_recently_viewed');
+      const parsed = raw ? JSON.parse(raw) : [];
+      return Array.isArray(parsed) ? parsed.filter((x) => typeof x === 'string').slice(0, 10) : [];
+    } catch {
+      return [];
     }
   });
 
@@ -286,6 +310,13 @@ export default function App() {
 
   const handleClearCart = () => {
     setCart([]);
+  };
+
+  const handleClearRecent = () => {
+    setRecentIds([]);
+    try {
+      localStorage.removeItem('mm_recently_viewed');
+    } catch { /* noop */ }
   };
 
   // Buy Now Action → straight to Flipkart-style checkout page
@@ -387,17 +418,6 @@ export default function App() {
     window.scrollTo({ top: 0 });
   };
 
-  // Distinct Brands
-  const availableBrands = useMemo(() => {
-    const set = new Set<string>();
-    ALL_PRODUCTS.forEach((p) => {
-      if (selectedCategory === 'all' || p.category === selectedCategory) {
-        set.add(p.brand);
-      }
-    });
-    return Array.from(set);
-  }, [selectedCategory]);
-
   // Filtered and Sorted Products (search runs across full catalog)
   const filteredProducts = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
@@ -432,8 +452,8 @@ export default function App() {
 
     // Sorting
     list = [...list].sort((a, b) => {
-      if (filter.sortBy === 'priceLow') return a.price - b.price;
-      if (filter.sortBy === 'priceHigh') return b.price - a.price;
+      if (filter.sortBy === 'price-low') return a.price - b.price;
+      if (filter.sortBy === 'price-high') return b.price - a.price;
       if (filter.sortBy === 'discount') return b.discountPercentage - a.discountPercentage;
       if (filter.sortBy === 'rating') return b.rating - a.rating;
       return b.ratingCount - a.ratingCount; // Popularity default
@@ -443,6 +463,17 @@ export default function App() {
   }, [selectedCategory, searchQuery, filter]);
 
   const cartProductIds = useMemo(() => cart.map((c) => c.product.id), [cart]);
+
+  // Grid shows 1 card per model (variants grouped, cheapest rep first)
+  const groupedProducts = useMemo(
+    () => dedupeToRepresentatives(filteredProducts),
+    [filteredProducts]
+  );
+
+  const recentProducts = useMemo(() => {
+    const map = new Map(ALL_PRODUCTS.map((p) => [p.id, p]));
+    return recentIds.map((id) => map.get(id)).filter((p): p is Product => Boolean(p));
+  }, [recentIds, ALL_PRODUCTS]);
 
   // ---- Admin Panel takes over full screen (?admin=1 or shield button) ----
   if (isAdmin) {
@@ -498,27 +529,6 @@ export default function App() {
           }
         }}
       />
-
-      {/* Category Navigation Bar — hidden on profile + on mobiles home it lives below landing banners (inside MobilesView) */}
-      {!selectedProduct &&
-        activeTab !== 'profile' &&
-        !(
-          activeTab === 'home' &&
-          selectedCategory === 'mobiles' &&
-          !searchQuery &&
-          filter.brand === 'all'
-        ) && (
-        <CategoryNav
-          categories={adminCategories}
-          selectedCategory={selectedCategory}
-          onSelectCategory={(catId) => {
-            setSelectedCategory(catId);
-            setFilter((prev) => ({ ...prev, brand: 'all' }));
-            setBrowseMode(false);
-            setActiveTab('home');
-          }}
-        />
-      )}
 
       {/* View Router — checkout & product pages take over like Flipkart PDP */}
       <main className="flex-1">
@@ -607,31 +617,6 @@ export default function App() {
             ) : (
               /* Filtered / Other Categories View */
               <div className="max-w-[1400px] mx-auto px-3 sm:px-4 py-4 space-y-4">
-                {/* Breadcrumb */}
-                <nav className="flex items-center gap-1.5 text-xs text-gray-500">
-                  <button 
-                    onClick={() => {
-                      setSelectedCategory('mobiles');
-                      setFilter((prev) => ({ ...prev, brand: 'all' }));
-                      setSearchQuery('');
-                      setBrowseMode(false);
-                    }} 
-                    className="hover:text-[#e42529] font-medium"
-                  >
-                    Home
-                  </button>
-                  <ChevronRight className="w-3.5 h-3.5 text-gray-400" />
-                  <span className="text-gray-900 font-semibold capitalize">
-                    {selectedCategory === 'all' ? 'All Electronics' : selectedCategory}
-                  </span>
-                  {filter.brand !== 'all' && (
-                    <>
-                      <ChevronRight className="w-3.5 h-3.5 text-gray-400" />
-                      <span className="text-[#e42529] font-semibold">{filter.brand}</span>
-                    </>
-                  )}
-                </nav>
-
                 {/* Promotional Hero Banners (Shown when exploring all products) */}
                 {!searchQuery && selectedCategory === 'all' && (
                   <>
@@ -642,65 +627,23 @@ export default function App() {
                   </>
                 )}
 
-                {/* Filter and Sorting Bar */}
-                <FilterBar
-                  filter={filter}
-                  onFilterChange={setFilter}
-                  brands={availableBrands}
-                  totalResults={filteredProducts.length}
-                />
+                {/* Sort control (Amazon-style, right aligned) */}
+                <div className="flex justify-end">
+                  <SortDropdown
+                    sortBy={filter.sortBy}
+                    onChange={(v) => setFilter((prev) => ({ ...prev, sortBy: v }))}
+                  />
+                </div>
 
-                {/* Active Filter Badges */}
-                {(selectedCategory !== 'mobiles' || filter.brand !== 'all' || filter.expressOnly || searchQuery) && (
-                  <div className="flex items-center gap-2 flex-wrap text-xs">
-                    <span className="text-xs font-bold text-gray-500">Active Filters:</span>
-                    {selectedCategory !== 'mobiles' && (
-                      <button
-                        onClick={() => setSelectedCategory('mobiles')}
-                        className="bg-red-50 text-[#e42529] font-bold px-2.5 py-1 rounded-full border border-red-200 text-xs flex items-center gap-1.5 hover:bg-red-100"
-                      >
-                        <span>Category: {adminCategories.find((c) => c.id === selectedCategory)?.name || selectedCategory}</span>
-                        <span>✕</span>
-                      </button>
-                    )}
-                    {filter.brand !== 'all' && (
-                      <button
-                        onClick={() => setFilter({ ...filter, brand: 'all' })}
-                        className="bg-red-50 text-[#e42529] font-bold px-2.5 py-1 rounded-full border border-red-200 text-xs flex items-center gap-1.5 hover:bg-red-100"
-                      >
-                        <span>Brand: {filter.brand}</span>
-                        <span>✕</span>
-                      </button>
-                    )}
-                    {filter.expressOnly && (
-                      <button
-                        onClick={() => setFilter({ ...filter, expressOnly: false })}
-                        className="bg-emerald-50 text-emerald-800 font-bold px-2.5 py-1 rounded-full border border-emerald-200 text-xs flex items-center gap-1.5 hover:bg-emerald-100"
-                      >
-                        <span>3-Hr Express Only</span>
-                        <span>✕</span>
-                      </button>
-                    )}
-                    {searchQuery && (
-                      <button
-                        onClick={() => setSearchQuery('')}
-                        className="bg-gray-100 text-gray-700 font-bold px-2.5 py-1 rounded-full border border-gray-200 text-xs flex items-center gap-1.5 hover:bg-gray-200"
-                      >
-                        <span>Search: "{searchQuery}"</span>
-                        <span>✕</span>
-                      </button>
-                    )}
-                  </div>
-                )}
-
-                {/* Products Grid */}
+                {/* Products Grid — 1 card per model, variants on PDP */}
                 <div>
-                  {filteredProducts.length > 0 ? (
+                  {groupedProducts.length > 0 ? (
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5">
-                      {filteredProducts.map((product) => (
+                      {groupedProducts.map(({ rep: product, count }) => (
                         <ProductCard
                           key={product.id}
                           product={product}
+                          variantCount={count}
                           isInCart={cartProductIds.includes(product.id)}
                           onAddToCart={handleAddToCart}
                           onViewProduct={(p) => handleSelectProduct(p)}
@@ -734,6 +677,18 @@ export default function App() {
                     </div>
                   )}
                 </div>
+              </div>
+            )}
+            {/* Recently viewed rail — home tab only */}
+            {!selectedProduct && !isCheckoutOpen && (
+              <div className="pb-4">
+                <RecentlyViewed
+                  products={recentProducts}
+                  cartProductIds={cartProductIds}
+                  onAddToCart={handleAddToCart}
+                  onViewProduct={(p) => handleSelectProduct(p)}
+                  onClear={handleClearRecent}
+                />
               </div>
             )}
           </div>

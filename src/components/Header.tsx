@@ -8,6 +8,7 @@ import {
   Clock,
 } from 'lucide-react';
 import { Product } from '../types';
+import { onImgError } from '../lib/imgFallback';
 
 interface HeaderProps {
   cartCount: number;
@@ -137,6 +138,7 @@ export const Header: React.FC<HeaderProps> = ({
                             <img
                               src={prod.image}
                               alt={prod.name}
+                              onError={onImgError}
                               className="w-10 h-10 object-contain rounded bg-white p-1 border border-gray-100"
                             />
                             <div className="flex-1 min-w-0">

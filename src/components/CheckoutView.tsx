@@ -18,6 +18,7 @@ import {
 import { CartItem } from '../types';
 import { loadOrders, saveOrders } from '../data/adminStore';
 import { COUPONS, calcCouponDiscount, validateCoupon } from '../lib/coupons';
+import { onImgError } from '../lib/imgFallback';
 
 interface CheckoutViewProps {
   cartItems: CartItem[];
@@ -559,7 +560,7 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
                   <div className="divide-y divide-gray-100">
                     {cartItems.map(({ product, quantity, selectedWarranty }) => (
                       <div key={product.id} className="p-3.5 flex gap-3">
-                        <img src={product.image} alt={product.name} className="w-14 h-14 object-contain bg-gray-50 rounded-lg p-1 shrink-0 border border-gray-100" />
+                        <img src={product.image} alt={product.name} onError={onImgError} className="w-14 h-14 object-contain bg-gray-50 rounded-lg p-1 shrink-0 border border-gray-100" />
                         <div className="flex-1 min-w-0">
                           <p className="text-xs font-bold line-clamp-1">{product.name}</p>
                           <p className="text-[11px] text-gray-500 mt-0.5">Qty: {quantity}{selectedWarranty ? ' • + Extended Warranty' : ''}</p>

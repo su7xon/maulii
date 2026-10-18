@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { X, Send, Loader2, Mic, Sparkles } from 'lucide-react';
 import { Product } from '../types';
+import { onImgError } from '../lib/imgFallback';
 
 // Fast free-tier Groq models (verified live). First working one wins.
 const MODELS = ['openai/gpt-oss-20b', 'qwen/qwen3.8-27b'];
@@ -173,7 +174,7 @@ export const ChatBot: React.FC<ChatBotProps> = ({ product, products, onViewProdu
           </div>
           {/* Product context */}
           <div className="px-4 pt-3 pb-1 flex gap-2.5 items-start shrink-0 bg-white">
-            <img src={product.image} alt={product.name}
+            <img src={product.image} alt={product.name} onError={onImgError}
               className="w-11 h-14 object-contain rounded-lg border border-gray-200 bg-gray-50 p-0.5 shrink-0" />
             <div className="min-w-0">
               <p className="text-[15px] font-extrabold text-gray-900 leading-tight">Ask about this</p>

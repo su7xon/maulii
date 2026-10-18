@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { onImgError } from '../lib/imgFallback';
 import { 
   X, 
   Trash2, 
@@ -203,6 +204,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                       <img
                         src={product.image}
                         alt={product.name}
+                        onError={onImgError}
                         className="w-16 h-16 object-contain bg-gray-50 rounded-lg p-1 shrink-0"
                       />
 

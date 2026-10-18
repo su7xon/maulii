@@ -9,6 +9,7 @@ import { Product, Category, Banner, BankOffer } from '../types';
 import { NewLaunchItem } from '../data/mockData';
 import { LandingSlide } from './LandingHero';
 import { Order } from '../data/adminStore';
+import { onImgError } from '../lib/imgFallback';
 import { ImageUpload } from './ImageUpload';
 
 type Tab = 'dashboard' | 'orders' | 'products' | 'categories' | 'banners' | 'offers';
@@ -298,7 +299,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                     <div className="flex gap-2 mt-2.5 overflow-x-auto pb-1">
                       {o.items.map((it) => (
                         <div key={it.id} className="flex items-center gap-2 shrink-0 bg-white border border-gray-100 rounded-xl p-1.5 pr-3">
-                          <img src={it.image} alt={it.name} className="w-9 h-9 object-contain bg-gray-50 rounded-lg border border-gray-100" />
+                          <img src={it.image} alt={it.name} onError={onImgError} className="w-9 h-9 object-contain bg-gray-50 rounded-lg border border-gray-100" />
                           <div className="text-[10px]">
                             <p className="font-bold max-w-[160px] truncate">{it.name}</p>
                             <p className="text-gray-500">Qty {it.quantity} • ₹{(it.price * it.quantity).toLocaleString('en-IN')}</p>
@@ -332,7 +333,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
               <div className="space-y-2 max-h-[60vh] overflow-y-auto pr-0.5">
                 {filtered.map((p) => (
                   <div key={p.id} className="flex items-center gap-3 border border-gray-100 rounded-2xl p-2.5 hover:border-gray-200 hover:shadow-[0_6px_18px_-10px_rgb(0_0_0/0.2)] transition bg-white">
-                    <img src={p.image} alt={p.name} className="w-12 h-12 object-contain bg-gray-50 rounded-xl border border-gray-100 shrink-0" />
+                    <img src={p.image} alt={p.name} onError={onImgError} className="w-12 h-12 object-contain bg-gray-50 rounded-xl border border-gray-100 shrink-0" />
                     <div className="flex-1 min-w-0">
                       <p className="text-xs font-extrabold truncate">{p.name || '(no name)'}</p>
                       <p className="text-[11px] text-gray-400 font-medium mt-0.5">{p.brand} • {p.category} • <span className="text-[#e42529] font-extrabold">₹{p.price.toLocaleString('en-IN')}</span></p>

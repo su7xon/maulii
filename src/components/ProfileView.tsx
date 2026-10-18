@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { Order } from '../data/adminStore';
 import { auth, googleProvider, isFirebaseConfigured } from '../lib/firebase';
+import { onImgError } from '../lib/imgFallback';
 import {
   onAuthStateChanged, signInWithPopup, signInWithRedirect, getRedirectResult,
   signOut as firebaseSignOut, type User as FirebaseUser,
@@ -368,7 +369,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 <div className="flex gap-2 mt-2.5 overflow-x-auto no-scrollbar">
                   {o.items.map((it) => (
                     <div key={it.id} className="flex items-center gap-2 shrink-0">
-                      <img src={it.image} alt={it.name} className="w-10 h-10 object-contain bg-gray-50 rounded-lg border border-gray-100" />
+                      <img src={it.image} alt={it.name} onError={onImgError} className="w-10 h-10 object-contain bg-gray-50 rounded-lg border border-gray-100" />
                       <div className="text-[11px]">
                         <p className="font-semibold text-gray-800 max-w-[140px] truncate">{it.name}</p>
                         <p className="text-gray-400">Qty {it.quantity}</p>

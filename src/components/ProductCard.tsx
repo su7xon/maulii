@@ -1,12 +1,14 @@
 import React from 'react';
 import { Star } from 'lucide-react';
 import { Product } from '../types';
+import { onImgError } from '../lib/imgFallback';
 
 interface ProductCardProps {
   product: Product;
   isInCart: boolean;
   onAddToCart: (product: Product) => void;
   onViewProduct: (product: Product) => void;
+  variantCount?: number;
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({
@@ -14,6 +16,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   isInCart,
   onAddToCart,
   onViewProduct,
+  variantCount,
 }) => {
   const calculatedBestPrice = product.bestPrice || Math.round(product.price * 0.92);
 
@@ -36,6 +39,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           <img
             src={product.image}
             alt={product.name}
+            onError={onImgError}
             className="w-full h-full object-contain p-2 group-hover:scale-108 transition-transform duration-500 ease-out"
             loading="lazy"
           />
@@ -67,6 +71,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           <h3 className="text-[12px] sm:text-[13px] font-semibold text-gray-900 line-clamp-2 min-h-[32px] sm:min-h-[36px] leading-snug group-hover:text-[#e42529] transition-colors mb-1 sm:mb-1.5">
             {product.name}
           </h3>
+          {variantCount !== undefined && variantCount > 1 && (
+            <p className="text-[10px] font-bold text-[#003380] bg-blue-50 border border-blue-100 rounded-md px-1.5 py-0.5 w-fit mb-1">
+              {variantCount} options • From ₹{product.price.toLocaleString('en-IN')}
+            </p>
+          )}
 
           {/* Pricing */}
           <div className="flex items-baseline gap-1.5 flex-wrap">

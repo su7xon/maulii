@@ -1,6 +1,5 @@
 import React, { useState, useMemo, useRef } from 'react';
 import {
-  ArrowLeft,
   Star,
   ShoppingCart,
   Zap,
@@ -20,6 +19,8 @@ import {
 import { Product, BankOffer } from '../types';
 import { ProductCard } from './ProductCard';
 import { BANK_OFFERS } from '../data/mockData';
+import { baseNameOf, groupVariants, sizeLabelOf, colorsOf, slug } from '../lib/variants';
+import { onImgError } from '../lib/imgFallback';
 
 interface ProductPageProps {
   product: Product;
@@ -51,6 +52,7 @@ export const ProductPage: React.FC<ProductPageProps> = ({
   const [activeImage, setActiveImage] = useState(0);
   const [includeWarranty, setIncludeWarranty] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [selectedColor, setSelectedColor] = useState<string>(() => colorsOf(product)[0] || '');
   const railRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
   // Reset gallery when switching products via suggestions
@@ -58,6 +60,53 @@ export const ProductPage: React.FC<ProductPageProps> = ({
     setActiveImage(0);
     setIncludeWarranty(false);
   }, [product.id]);
+
+  // Keep colour selection across size variants when possible
+  React.useEffect(() => {
+    setSelectedColor((prev) => {
+      const cols = colorsOf(product);
+      if (prev && cols.includes(prev)) return prev;
+      return cols[0] || '';
+    });
+  }, [product.id]);
+
+  // ---- Amazon-style variants: same model, different RAM/Storage/Colour ----
+  const variants = useMemo(() => groupVariants(allProducts, product), [allProducts, product]);
+  const hasVariants = variants.length > 1;
+  const baseName = useMemo(() => baseNameOf(product), [product]);
+  const currentSize = useMemo(() => sizeLabelOf(product), [product]);
+  const allColors = useMemo(() => {
+    const seen: string[] = [];
+    for (const v of variants.length > 0 ? variants : [product]) {
+      for (const c of colorsOf(v)) if (!seen.includes(c)) seen.push(c);
+    }
+    return seen;
+  }, [variants, product]);
+  const sizeOptions = useMemo(() => {
+    const map = new Map<string, Product>();
+    for (const v of variants.length > 0 ? variants : [product]) {
+      const label = sizeLabelOf(v);
+      if (!label) continue;
+      const prev = map.get(label);
+      if (!prev || v.price < prev.price) map.set(label, v);
+    }
+    return [...map.entries()].map(([label, variant]) => ({ label, variant }));
+  }, [variants, product]);
+  const showVariantPicker = hasVariants || allColors.length > 1 || sizeOptions.length > 1;
+
+  // Cart gets exact colour+size (separate line per colour)
+  const cartProduct = useMemo((): Product => {
+    if (!showVariantPicker || (!selectedColor && !currentSize)) return product;
+    const colorPart = selectedColor ? ` - ${selectedColor}` : '';
+    const sizePart = currentSize && hasVariants ? ` (${currentSize})` : '';
+    const withColor = selectedColor ? `${product.id}::${slug(selectedColor)}` : product.id;
+    return {
+      ...product,
+      id: selectedColor ? withColor : product.id,
+      name: hasVariants || selectedColor ? `${baseName}${sizePart}${colorPart}` : product.name,
+      specs: selectedColor ? { ...product.specs, Colour: selectedColor } : product.specs,
+    };
+  }, [product, selectedColor, currentSize, showVariantPicker, hasVariants, baseName]);
 
   const allImages = [product.image, ...(product.additionalImages || [])];
   const bestPrice = product.bestPrice || Math.round(product.price * 0.92);
@@ -121,19 +170,6 @@ export const ProductPage: React.FC<ProductPageProps> = ({
 
   return (
     <div className="max-w-[1400px] mx-auto px-3 sm:px-4 py-3 space-y-6">
-      {/* Breadcrumb */}
-      <nav className="flex items-center gap-1.5 text-xs text-gray-500 flex-wrap">
-        <button onClick={onBack} className="flex items-center gap-1 hover:text-[#e42529] font-bold text-gray-700">
-          <ArrowLeft className="w-3.5 h-3.5" /> Back
-        </button>
-        <ChevronRight className="w-3.5 h-3.5 text-gray-300" />
-        <button onClick={onHome} className="hover:text-[#e42529] font-medium">Home</button>
-        <ChevronRight className="w-3.5 h-3.5 text-gray-300" />
-        <span className="hover:text-[#e42529] font-medium capitalize cursor-pointer">{product.category}</span>
-        <ChevronRight className="w-3.5 h-3.5 text-gray-300" />
-        <span className="text-gray-900 font-semibold truncate max-w-[200px] sm:max-w-md">{product.name}</span>
-      </nav>
-
       {/* Main 2-col */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* Gallery */}
@@ -144,6 +180,7 @@ export const ProductPage: React.FC<ProductPageProps> = ({
                 key={product.id + activeImage}
                 src={allImages[activeImage]}
                 alt={product.name}
+                onError={onImgError}
                 className="card-entrance w-full h-full object-contain p-4"
               />
               <span className="absolute top-3 left-3 bg-[#e42529] text-white text-[11px] font-black px-2.5 py-1 rounded-full shadow">
@@ -167,7 +204,7 @@ export const ProductPage: React.FC<ProductPageProps> = ({
                     onClick={() => setActiveImage(i)}
                     className={`w-14 h-14 rounded-xl border-2 p-1 bg-white transition-all ${activeImage === i ? 'border-[#e42529] shadow scale-105' : 'border-gray-200 opacity-60 hover:opacity-100'}`}
                   >
-                    <img src={img} alt="" className="w-full h-full object-contain" />
+                    <img src={img} alt="" onError={onImgError} className="w-full h-full object-contain" />
                   </button>
                 ))}
               </div>
@@ -177,13 +214,13 @@ export const ProductPage: React.FC<ProductPageProps> = ({
           {/* Desktop CTA */}
           <div className="hidden lg:flex gap-3">
             <button
-              onClick={() => onAddToCart(product, includeWarranty)}
+              onClick={() => onAddToCart(cartProduct, includeWarranty)}
               className="flex-1 py-3.5 rounded-xl border-2 border-[#e42529] text-[#e42529] hover:bg-red-50 font-extrabold flex items-center justify-center gap-2 active:scale-[0.98] transition-all"
             >
               <ShoppingCart className="w-5 h-5" /> ADD TO CART
             </button>
             <button
-              onClick={() => onBuyNow(product, includeWarranty)}
+              onClick={() => onBuyNow(cartProduct, includeWarranty)}
               className="flex-1 py-3.5 rounded-xl bg-[#e42529] hover:bg-[#c21418] text-white font-extrabold flex items-center justify-center gap-2 shadow-[0_10px_30px_-8px_rgb(228_37_41/0.5)] active:scale-[0.98] transition-all"
             >
               <Zap className="w-5 h-5" /> BUY NOW
@@ -208,6 +245,71 @@ export const ProductPage: React.FC<ProductPageProps> = ({
               )}
             </div>
           </div>
+
+          {/* Amazon-style variant picker */}
+          {showVariantPicker && (
+            <div className="space-y-3">
+              {allColors.length > 0 && (
+                <div>
+                  <p className="text-[13px] text-gray-800 mb-1.5">
+                    <span className="text-gray-500">Colour:</span>{' '}
+                    <span className="font-bold">{selectedColor || allColors[0]}</span>
+                  </p>
+                  <div className="flex gap-2 flex-wrap">
+                    {allColors.map((c) => {
+                      const active = c === (selectedColor || allColors[0]);
+                      return (
+                        <button
+                          key={c}
+                          onClick={() => setSelectedColor(c)}
+                          title={c}
+                          className={`flex items-center gap-2 rounded-xl border-2 px-2 py-1.5 min-w-[120px] max-w-[170px] bg-white transition-all active:scale-95 ${active ? 'border-[#e42529] shadow' : 'border-gray-200 hover:border-gray-400'}`}
+                        >
+                          <img src={product.image} alt={c} onError={onImgError} className="w-9 h-11 object-contain shrink-0" loading="lazy" />
+                          <span className="text-[11px] font-bold text-gray-800 leading-tight line-clamp-2 text-left">{c}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+              {sizeOptions.length > 1 && (
+                <div>
+                  <p className="text-[13px] text-gray-800 mb-1.5">
+                    <span className="text-gray-500">Size:</span>{' '}
+                    <span className="font-bold">{currentSize}</span>
+                  </p>
+                  <div className="flex gap-2 flex-wrap">
+                    {sizeOptions.map(({ label, variant }) => {
+                      const active = label === currentSize;
+                      return (
+                        <button
+                          key={label}
+                          onClick={() => {
+                            if (variant.id !== product.id) onViewProduct(variant);
+                          }}
+                          className={`rounded-xl border-2 px-3 py-1.5 min-w-[130px] bg-white text-left transition-all active:scale-95 ${active ? 'border-[#e42529] shadow bg-red-50/40' : 'border-gray-200 hover:border-gray-400'}`}
+                        >
+                          <span className="block text-[12px] font-extrabold text-gray-900">{label}</span>
+                          <span className="block text-[13px] font-extrabold text-gray-900 mt-0.5">
+                            ₹{variant.price.toLocaleString('en-IN')}
+                          </span>
+                          {variant.mrp > variant.price && (
+                            <span className="block text-[11px] text-gray-400 line-through">
+                              ₹{variant.mrp.toLocaleString('en-IN')}
+                            </span>
+                          )}
+                          <span className={`block text-[11px] font-bold mt-0.5 ${variant.inStock ? 'text-emerald-600' : 'text-red-600'}`}>
+                            {variant.inStock ? 'In stock' : 'Out of stock'}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Price box */}
           <div className="bg-red-50/60 border border-red-100 rounded-2xl p-4">
@@ -400,7 +502,7 @@ export const ProductPage: React.FC<ProductPageProps> = ({
       <div className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-white border-t border-gray-200 px-3 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] shadow-[0_-8px_24px_-10px_rgb(0_0_0/0.2)]">
         <div className="flex gap-2 items-stretch">
           <button
-            onClick={() => onAddToCart(product, includeWarranty)}
+            onClick={() => onAddToCart(cartProduct, includeWarranty)}
             aria-label="Add to cart"
             className="w-12 shrink-0 rounded-2xl border-[1.5px] border-gray-300 bg-white text-gray-800 flex items-center justify-center active:scale-95 transition-transform"
           >
@@ -410,7 +512,7 @@ export const ProductPage: React.FC<ProductPageProps> = ({
             </span>
           </button>
           <button
-            onClick={() => onBuyNow(product, includeWarranty)}
+            onClick={() => onBuyNow(cartProduct, includeWarranty)}
             className="flex-1 rounded-2xl border-[1.5px] border-gray-300 bg-white py-1.5 active:scale-[0.98] transition-transform"
           >
             <span className="block text-sm font-extrabold text-gray-900 leading-tight">Buy with EMI</span>
@@ -419,7 +521,7 @@ export const ProductPage: React.FC<ProductPageProps> = ({
             </span>
           </button>
           <button
-            onClick={() => onBuyNow(product, includeWarranty)}
+            onClick={() => onBuyNow(cartProduct, includeWarranty)}
             className="flex-[1.15] rounded-2xl bg-[#e42529] hover:bg-[#c21418] py-1.5 active:scale-[0.98] transition-all shadow-[0_10px_24px_-8px_rgb(228_37_41/0.6)]"
           >
             <span className="block text-sm font-extrabold text-white leading-tight">Buy now</span>
