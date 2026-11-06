@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.maulimobile.app",
+      "sha256_cert_fingerprints": [
+        "0B:A8:44:93:43:92:D9:36:9F:87:68:D3:E1:1B:B9:C3:C7:A1:7F:24:6C:56:3C:C6:81:A1:8F:0C:4F:75:72:AF"
+      ]
+    }
+  }
+]

@@ -1,0 +1,658 @@
+import React, { useState, useMemo, useRef } from 'react';
+import {
+  Star,
+  ShoppingCart,
+  Zap,
+  ShieldCheck,
+  Truck,
+  RotateCcw,
+  Tag,
+  Share2,
+  Gift,
+  ChevronRight,
+  ChevronLeft,
+  Check,
+  Banknote,
+  Wrench,
+  Plus,
+  Heart,
+  X,
+} from 'lucide-react';
+import { Product, BankOffer } from '../types';
+import { ProductCard } from './ProductCard';
+import { BANK_OFFERS } from '../data/mockData';
+import { baseNameOf, groupVariants, sizeLabelOf, colorsOf, slug } from '../lib/variants';
+import { onImgError } from '../lib/imgFallback';
+
+interface ProductPageProps {
+  product: Product;
+  allProducts: Product[];
+  onAddToCart: (product: Product, withWarranty?: boolean) => void;
+  onBuyNow: (product: Product, withWarranty?: boolean) => void;
+  onViewProduct: (product: Product) => void;
+  onBack: () => void;
+  onHome: () => void;
+  currentPincode: string;
+  currentCity: string;
+  onOpenPincodeModal: () => void;
+  offers?: BankOffer[];
+  isWishlisted?: boolean;
+  onToggleWishlist?: (product: Product, e: React.MouseEvent) => void;
+}
+
+export const ProductPage: React.FC<ProductPageProps> = ({
+  product,
+  allProducts,
+  onAddToCart,
+  onBuyNow,
+  onViewProduct,
+  onBack,
+  onHome,
+  currentPincode,
+  currentCity,
+  onOpenPincodeModal,
+  offers,
+  isWishlisted = false,
+  onToggleWishlist,
+}) => {
+  const [activeImage, setActiveImage] = useState(0);
+  const [includeWarranty, setIncludeWarranty] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [selectedColor, setSelectedColor] = useState<string>(() => colorsOf(product)[0] || '');
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const railRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+  const allImages = [product.image, ...(product.additionalImages || [])];
+
+  // Keyboard navigation for Lightbox
+  React.useEffect(() => {
+    if (!isLightboxOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsLightboxOpen(false);
+      if (e.key === 'ArrowRight') setActiveImage((i) => (i + 1) % allImages.length);
+      if (e.key === 'ArrowLeft') setActiveImage((i) => (i - 1 + allImages.length) % allImages.length);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [isLightboxOpen, allImages.length]);
+
+  // Reset gallery when switching products via suggestions
+  React.useEffect(() => {
+    setActiveImage(0);
+    setIncludeWarranty(false);
+  }, [product.id]);
+
+  // Keep colour selection across size variants when possible
+  React.useEffect(() => {
+    setSelectedColor((prev) => {
+      const cols = colorsOf(product);
+      if (prev && cols.includes(prev)) return prev;
+      return cols[0] || '';
+    });
+  }, [product.id]);
+
+  // ---- Amazon-style variants: same model, different RAM/Storage/Colour ----
+  const variants = useMemo(() => groupVariants(allProducts, product), [allProducts, product]);
+  const hasVariants = variants.length > 1;
+  const baseName = useMemo(() => baseNameOf(product), [product]);
+  const currentSize = useMemo(() => sizeLabelOf(product), [product]);
+  const allColors = useMemo(() => {
+    const seen: string[] = [];
+    for (const v of variants.length > 0 ? variants : [product]) {
+      for (const c of colorsOf(v)) if (!seen.includes(c)) seen.push(c);
+    }
+    return seen;
+  }, [variants, product]);
+  const sizeOptions = useMemo(() => {
+    const map = new Map<string, Product>();
+    for (const v of variants.length > 0 ? variants : [product]) {
+      const label = sizeLabelOf(v);
+      if (!label) continue;
+      const prev = map.get(label);
+      if (!prev || v.price < prev.price) map.set(label, v);
+    }
+    return [...map.entries()].map(([label, variant]) => ({ label, variant }));
+  }, [variants, product]);
+  const showVariantPicker = hasVariants || allColors.length > 1 || sizeOptions.length > 1;
+
+  // Cart gets exact colour+size (separate line per colour)
+  const cartProduct = useMemo((): Product => {
+    if (!showVariantPicker || (!selectedColor && !currentSize)) return product;
+    const colorPart = selectedColor ? ` - ${selectedColor}` : '';
+    const sizePart = currentSize && hasVariants ? ` (${currentSize})` : '';
+    const withColor = selectedColor ? `${product.id}::${slug(selectedColor)}` : product.id;
+    return {
+      ...product,
+      id: selectedColor ? withColor : product.id,
+      name: hasVariants || selectedColor ? `${baseName}${sizePart}${colorPart}` : product.name,
+      specs: selectedColor ? { ...product.specs, Colour: selectedColor } : product.specs,
+    };
+  }, [product, selectedColor, currentSize, showVariantPicker, hasVariants, baseName]);
+
+  const bestPrice = product.bestPrice || Math.round(product.price * 0.92);
+  const savings = product.mrp - product.price;
+  const warrantyPrice = product.price > 50000 ? 2499 : 1299;
+
+  // Recommendation rails
+  const suggestions = useMemo(() => {
+    const others = allProducts.filter((p) => p.id !== product.id);
+    const sameCat = others.filter((p) => p.category === product.category);
+    const sameBrand = others.filter(
+      (p) => p.category !== product.category && p.brand === product.brand
+    );
+    const rest = others.filter(
+      (p) => p.category !== product.category && p.brand !== product.brand
+    );
+    return [...sameCat, ...sameBrand, ...rest].slice(0, 10);
+  }, [allProducts, product]);
+
+  const moreFromBrand = useMemo(
+    () => allProducts.filter((p) => p.id !== product.id && p.brand === product.brand).slice(0, 10),
+    [allProducts, product]
+  );
+
+  const similarPrice = useMemo(() => {
+    const lo = product.price * 0.7;
+    const hi = product.price * 1.3;
+    return allProducts
+      .filter((p) => p.id !== product.id && p.price >= lo && p.price <= hi)
+      .slice(0, 10);
+  }, [allProducts, product]);
+
+  const topRated = useMemo(
+    () =>
+      allProducts
+        .filter((p) => p.id !== product.id)
+        .sort((a, b) => b.rating * Math.log(b.ratingCount + 1) - a.rating * Math.log(a.ratingCount + 1))
+        .slice(0, 10),
+    [allProducts, product]
+  );
+
+  const rails = useMemo(
+    () => [
+      { title: 'You may also like', kicker: 'Handpicked for you', items: suggestions },
+      { title: `More from ${product.brand}`, kicker: 'Same brand', items: moreFromBrand },
+      { title: 'Similar price phones', kicker: 'Same budget', items: similarPrice },
+      { title: 'Top rated by buyers', kicker: 'Loved across India', items: topRated },
+    ],
+    [suggestions, moreFromBrand, similarPrice, topRated, product.brand]
+  );
+
+  const handleShare = () => {
+    navigator.clipboard?.writeText(window.location.href).catch(() => {});
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const scrollRail = (key: string, dir: 'left' | 'right') => {
+    railRefs.current.get(key)?.scrollBy({ left: dir === 'left' ? -500 : 500, behavior: 'smooth' });
+  };
+
+  return (
+    <div className="max-w-[1400px] mx-auto px-3 sm:px-4 py-3 space-y-6">
+      {/* Main 2-col */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        {/* Gallery */}
+        <div className="lg:sticky lg:top-32 self-start space-y-3">
+          <div className="bg-white rounded-2xl border border-gray-100 p-5 relative shadow-sm">
+            <div
+              onClick={() => setIsLightboxOpen(true)}
+              className="relative w-full max-w-[400px] mx-auto aspect-square flex items-center justify-center bg-gradient-to-b from-gray-50 to-white rounded-xl overflow-hidden cursor-zoom-in select-none border border-gray-100 group/img"
+            >
+              <img
+                key={product.id + activeImage}
+                src={allImages[activeImage]}
+                alt={product.name}
+                onError={onImgError}
+                className="w-full h-full object-contain p-4 group-hover/img:scale-105 transition-transform duration-300"
+              />
+              <span className="absolute top-3 left-3 bg-[#e42529] text-white text-[11px] font-black px-2.5 py-1 rounded-full shadow pointer-events-none z-10">
+                {product.discountPercentage}% OFF
+              </span>
+              <div
+                className="absolute top-3 right-3 flex gap-2 z-10"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {onToggleWishlist && (
+                  <button
+                    onClick={(e) => onToggleWishlist(product, e)}
+                    className={`w-9 h-9 rounded-full shadow border flex items-center justify-center transition-all ${
+                      isWishlisted
+                        ? 'bg-red-50 border-red-200 text-[#e42529] scale-105'
+                        : 'bg-white border-gray-100 text-gray-500 hover:text-[#e42529]'
+                    }`}
+                    aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
+                  >
+                    <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-[#e42529] animate-heart-pop' : ''}`} />
+                  </button>
+                )}
+                <button
+                  onClick={handleShare}
+                  className="w-9 h-9 rounded-full bg-white shadow border border-gray-100 flex items-center justify-center text-gray-500 hover:text-gray-900 relative"
+                  aria-label="Share"
+                >
+                  {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Share2 className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+            {allImages.length > 1 && (
+              <div className="flex gap-2 mt-3 justify-center">
+                {allImages.map((img, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setActiveImage(i)}
+                    className={`w-14 h-14 rounded-xl border-2 p-1 bg-white transition-all ${activeImage === i ? 'border-[#e42529] shadow scale-105' : 'border-gray-200 opacity-60 hover:opacity-100'}`}
+                  >
+                    <img src={img} alt="" onError={onImgError} className="w-full h-full object-contain" />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Desktop CTA */}
+          <div className="hidden lg:flex gap-3">
+            <button
+              onClick={() => onAddToCart(cartProduct, includeWarranty)}
+              className="flex-1 py-3.5 rounded-xl border-2 border-[#e42529] text-[#e42529] hover:bg-red-50 font-extrabold flex items-center justify-center gap-2 active:scale-[0.98] transition-all"
+            >
+              <ShoppingCart className="w-5 h-5" /> ADD TO CART
+            </button>
+            <button
+              onClick={() => onBuyNow(cartProduct, includeWarranty)}
+              className="flex-1 py-3.5 rounded-xl bg-[#e42529] hover:bg-[#c21418] text-white font-extrabold flex items-center justify-center gap-2 shadow-[0_10px_30px_-8px_rgb(228_37_41/0.5)] active:scale-[0.98] transition-all"
+            >
+              <Zap className="w-5 h-5" /> BUY NOW
+            </button>
+          </div>
+        </div>
+
+        {/* Info */}
+        <div className="space-y-4">
+          <div>
+            <p className="text-xs font-black uppercase tracking-[0.15em] text-[#e42529] mb-1">{product.brand}</p>
+            <h1 className="text-xl sm:text-2xl font-extrabold text-gray-900 leading-snug">{product.name}</h1>
+            <div className="flex items-center gap-2 mt-2">
+              <span className="inline-flex items-center gap-1 bg-emerald-600 text-white text-xs font-bold px-2 py-0.5 rounded-md">
+                {product.rating.toFixed(1)} <Star className="w-3 h-3 fill-white" />
+              </span>
+              <span className="text-xs text-gray-500 font-medium">
+                {product.ratingCount.toLocaleString('en-IN')} ratings & reviews
+              </span>
+              {product.inStock && (
+                <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">In Stock</span>
+              )}
+            </div>
+          </div>
+
+          {/* Amazon-style variant picker */}
+          {showVariantPicker && (
+            <div className="space-y-3">
+              {allColors.length > 0 && (
+                <div>
+                  <p className="text-[13px] text-gray-800 mb-1.5">
+                    <span className="text-gray-500">Colour:</span>{' '}
+                    <span className="font-bold">{selectedColor || allColors[0]}</span>
+                  </p>
+                  <div className="flex gap-2 flex-wrap">
+                    {allColors.map((c) => {
+                      const active = c === (selectedColor || allColors[0]);
+                      return (
+                        <button
+                          key={c}
+                          onClick={() => setSelectedColor(c)}
+                          title={c}
+                          className={`flex items-center gap-2 rounded-xl border-2 px-2 py-1.5 min-w-[120px] max-w-[170px] bg-white transition-all active:scale-95 ${active ? 'border-[#e42529] shadow' : 'border-gray-200 hover:border-gray-400'}`}
+                        >
+                          <img src={product.image} alt={c} onError={onImgError} className="w-9 h-11 object-contain shrink-0" loading="lazy" />
+                          <span className="text-[11px] font-bold text-gray-800 leading-tight line-clamp-2 text-left">{c}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+              {sizeOptions.length > 1 && (
+                <div>
+                  <p className="text-[13px] text-gray-800 mb-1.5">
+                    <span className="text-gray-500">Size:</span>{' '}
+                    <span className="font-bold">{currentSize}</span>
+                  </p>
+                  <div className="flex gap-2 flex-wrap">
+                    {sizeOptions.map(({ label, variant }) => {
+                      const active = label === currentSize;
+                      return (
+                        <button
+                          key={label}
+                          onClick={() => {
+                            if (variant.id !== product.id) onViewProduct(variant);
+                          }}
+                          className={`rounded-xl border-2 px-3 py-1.5 min-w-[130px] bg-white text-left transition-all active:scale-95 ${active ? 'border-[#e42529] shadow bg-red-50/40' : 'border-gray-200 hover:border-gray-400'}`}
+                        >
+                          <span className="block text-[12px] font-extrabold text-gray-900">{label}</span>
+                          <span className="block text-[13px] font-extrabold text-gray-900 mt-0.5">
+                            ₹{variant.price.toLocaleString('en-IN')}
+                          </span>
+                          {variant.mrp > variant.price && (
+                            <span className="block text-[11px] text-gray-400 line-through">
+                              ₹{variant.mrp.toLocaleString('en-IN')}
+                            </span>
+                          )}
+                          <span className={`block text-[11px] font-bold mt-0.5 ${variant.inStock ? 'text-emerald-600' : 'text-red-600'}`}>
+                            {variant.inStock ? 'In stock' : 'Out of stock'}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Price box */}
+          <div className="bg-red-50/60 border border-red-100 rounded-2xl p-4">
+            <div className="flex items-baseline gap-2 flex-wrap">
+              <span className="text-3xl font-black text-gray-900 tracking-tight">₹{product.price.toLocaleString('en-IN')}</span>
+              <span className="text-sm text-gray-400 line-through">₹{product.mrp.toLocaleString('en-IN')}</span>
+              <span className="text-sm font-bold text-emerald-600">{product.discountPercentage}% off</span>
+            </div>
+            <p className="text-xs text-emerald-700 font-bold mt-1">You save ₹{savings.toLocaleString('en-IN')} on this order</p>
+            <div className="mt-3 pt-3 border-t border-red-200/60 flex items-center gap-2 flex-wrap">
+              <span className="text-[10px] font-black uppercase tracking-wider text-[#d91e63] bg-pink-50 border border-pink-200 rounded-md px-1.5 py-0.5">Best Price</span>
+              <span className="text-base font-extrabold">₹{bestPrice.toLocaleString('en-IN')}</span>
+              <span className="text-xs text-gray-500">with all applicable offers</span>
+            </div>
+            <p className="text-[11px] text-gray-500 mt-2">
+              Inclusive of all taxes • No Cost EMI from ₹{product.emiStartsAt.toLocaleString('en-IN')}/mo
+            </p>
+            <div className="mt-2 pt-2 border-t border-red-100 flex items-center justify-between text-xs">
+              <span className="flex items-center gap-1.5 text-gray-700 font-medium">
+                <Gift className="w-3.5 h-3.5 text-[#003380]" /> Mauli One Loyalty Points
+              </span>
+              <span className="font-bold text-[#003380]">+{product.reliancePoints} Points</span>
+            </div>
+          </div>
+
+          {/* Delivery */}
+          <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm">
+            <div className="flex items-center justify-between mb-2">
+              <span className="flex items-center gap-1.5 text-sm font-bold"><Truck className="w-4 h-4 text-[#e42529]" /> Delivery to {currentCity} {currentPincode}</span>
+              <button onClick={onOpenPincodeModal} className="text-xs font-bold text-[#e42529] hover:underline">Change</button>
+            </div>
+            <div className="bg-gray-50 rounded-xl p-3 text-xs space-y-1.5">
+              <div className="flex justify-between"><span className="text-gray-600">Standard delivery</span><span className="font-bold text-emerald-600">FREE</span></div>
+              {product.expressDelivery && (
+                <div className="flex items-center gap-1.5 text-emerald-700 font-bold">
+                  <Zap className="w-3.5 h-3.5" /> 3-Hour Express Delivery available
+                </div>
+              )}
+              <div className="text-[11px] text-gray-500">Order in next 3 hrs for same-day dispatch</div>
+            </div>
+          </div>
+
+          {/* Service promises (Flipkart style trust row) */}
+          <div className="bg-white border border-gray-100 rounded-2xl p-3.5 shadow-sm grid grid-cols-3 gap-2">
+            <div className="flex flex-col items-center text-center gap-1.5">
+              <span className="w-12 h-12 rounded-2xl bg-[#eef3fb] flex items-center justify-center">
+                <Wrench className="w-6 h-6 text-[#2874f0]" strokeWidth={1.8} />
+              </span>
+              <span className="text-[11px] font-semibold text-gray-700 leading-tight">7-day<br />brand support <ChevronRight className="w-3 h-3 text-gray-400 inline -mt-0.5" /></span>
+            </div>
+            <div className="flex flex-col items-center text-center gap-1.5">
+              <span className="w-12 h-12 rounded-2xl bg-[#eef3fb] flex items-center justify-center">
+                <Banknote className="w-6 h-6 text-[#2874f0]" strokeWidth={1.8} />
+              </span>
+              <span className="text-[11px] font-semibold text-gray-700 leading-tight">Cash on<br />Delivery <ChevronRight className="w-3 h-3 text-gray-400 inline -mt-0.5" /></span>
+            </div>
+            <a
+              href="https://wa.me/918237305111?text=Hi!%20I%20need%20support."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex flex-col items-center text-center gap-1.5 active:scale-95 transition-transform"
+            >
+              <span className="w-12 h-12 rounded-2xl bg-[#eef3fb] flex items-center justify-center">
+                <span className="text-[14px] font-black text-[#2874f0] tracking-tighter">24×7</span>
+              </span>
+              <span className="text-[11px] font-semibold text-gray-700 leading-tight">Customer<br />support <ChevronRight className="w-3 h-3 text-gray-400 inline -mt-0.5" /></span>
+            </a>
+          </div>
+
+          {/* Bank offers */}
+          <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm">
+            <p className="flex items-center gap-1.5 text-sm font-bold mb-2.5"><Tag className="w-4 h-4 text-[#e42529]" /> Available offers</p>
+            <div className="space-y-2">
+              {(offers && offers.length > 0 ? offers : BANK_OFFERS).slice(0, 3).map((bo) => (
+                <div key={bo.code} className="p-2.5 rounded-xl border border-dashed border-gray-300 bg-gray-50/60 text-xs">
+                  <span className="font-bold">{bo.bank}: </span>
+                  <span className="text-gray-600">{bo.offer}</span>
+                  <div className="text-[10px] text-gray-400 mt-0.5">Code: <span className="font-mono font-bold text-gray-700">{bo.code}</span></div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Warranty add-on */}
+          <label className="flex items-start gap-3 bg-blue-50/60 border border-blue-100 rounded-2xl p-4 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={includeWarranty}
+              onChange={(e) => setIncludeWarranty(e.target.checked)}
+              className="mt-1 w-4 h-4 accent-[#003380]"
+            />
+            <div className="text-xs flex-1">
+              <div className="flex justify-between font-bold">
+                <span className="flex items-center gap-1"><ShieldCheck className="w-4 h-4 text-[#003380]" /> Extended Protection</span>
+                <span className="text-[#003380]">+₹{warrantyPrice.toLocaleString('en-IN')}</span>
+              </div>
+              <p className="text-[11px] text-gray-600 mt-0.5">1 Year extra warranty + free doorstep pickup & repair.</p>
+            </div>
+          </label>
+
+          {/* About + specs */}
+          <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm">
+            <h3 className="text-sm font-extrabold mb-2">About this item</h3>
+            <ul className="space-y-1.5 text-[13px] text-gray-600">
+              {product.features.map((f, i) => (
+                <li key={i} className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-[#e42529] mt-1.5 shrink-0" />{f}</li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm">
+            <h3 className="text-sm font-extrabold mb-1">Specifications</h3>
+            <div className="divide-y divide-gray-100 text-[13px]">
+              {Object.entries(product.specs).map(([k, v]) => (
+                <div key={k} className="py-2 flex justify-between gap-4">
+                  <span className="text-gray-500 w-1/3">{k}</span>
+                  <span className="font-semibold w-2/3 text-right">{v}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2 text-center text-xs">
+            <div className="bg-white border border-gray-100 rounded-xl p-3 flex flex-col items-center shadow-sm">
+              <RotateCcw className="w-4 h-4 text-gray-600 mb-1" />
+              <span className="font-bold">7 Days Return</span>
+              <span className="text-[10px] text-gray-500">Replacement Guarantee</span>
+            </div>
+            <div className="bg-white border border-gray-100 rounded-xl p-3 flex flex-col items-center shadow-sm">
+              <ShieldCheck className="w-4 h-4 text-emerald-600 mb-1" />
+              <span className="font-bold">Brand Warranty</span>
+              <span className="text-[10px] text-gray-500">100% Genuine Mauli</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Recommendation rails */}
+      <div className="space-y-7">
+        {rails.map(
+          (rail) =>
+            rail.items.length > 0 && (
+              <section key={rail.title} className="relative">
+                <div className="flex items-end justify-between mb-3">
+                  <div>
+                    <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#e42529]">{rail.kicker}</p>
+                    <h2 className="text-xl sm:text-2xl font-black tracking-tight">{rail.title}</h2>
+                  </div>
+                  <div className="hidden sm:flex gap-2">
+                    <button
+                      onClick={() => scrollRail(rail.title, 'left')}
+                      aria-label={`Previous ${rail.title}`}
+                      className="w-9 h-9 rounded-full bg-white shadow border border-gray-200 flex items-center justify-center hover:bg-gray-50"
+                    >
+                      <ChevronLeft className="w-5 h-5" />
+                    </button>
+                    <button
+                      onClick={() => scrollRail(rail.title, 'right')}
+                      aria-label={`Next ${rail.title}`}
+                      className="w-9 h-9 rounded-full bg-white shadow border border-gray-200 flex items-center justify-center hover:bg-gray-50"
+                    >
+                      <ChevronRight className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
+                <div
+                  ref={(el) => {
+                    if (el) railRefs.current.set(rail.title, el);
+                    else railRefs.current.delete(rail.title);
+                  }}
+                  className="flex gap-3 overflow-x-auto no-scrollbar snap-x pb-2"
+                >
+                  {rail.items.map((s) => (
+                    <div key={s.id} className="min-w-[200px] sm:min-w-[225px] max-w-[240px] snap-start">
+                      <ProductCard
+                        product={s}
+                        isInCart={false}
+                        onAddToCart={onAddToCart}
+                        onViewProduct={onViewProduct}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )
+        )}
+      </div>
+
+      {/* Mobile sticky CTA — Flipkart style: cart icon + EMI pill + Buy now pill */}
+      <div className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-white border-t border-gray-200 px-3 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] shadow-[0_-8px_24px_-10px_rgb(0_0_0/0.2)]">
+        <div className="flex gap-2 items-stretch">
+          <button
+            onClick={() => onAddToCart(cartProduct, includeWarranty)}
+            aria-label="Add to cart"
+            className="w-12 shrink-0 rounded-2xl border-[1.5px] border-gray-300 bg-white text-gray-800 flex items-center justify-center active:scale-95 transition-transform"
+          >
+            <span className="relative">
+              <ShoppingCart className="w-5 h-5" strokeWidth={1.8} />
+              <Plus className="w-3 h-3 absolute -top-1.5 -right-1.5 bg-white rounded-full" strokeWidth={2.5} />
+            </span>
+          </button>
+          <button
+            onClick={() => onBuyNow(cartProduct, includeWarranty)}
+            className="flex-1 rounded-2xl border-[1.5px] border-gray-300 bg-white py-1.5 active:scale-[0.98] transition-transform"
+          >
+            <span className="block text-sm font-extrabold text-gray-900 leading-tight">Buy with EMI</span>
+            <span className="block text-[11px] font-medium text-gray-600 mt-px">
+              From ₹{product.emiStartsAt.toLocaleString('en-IN')}/m
+            </span>
+          </button>
+          <button
+            onClick={() => onBuyNow(cartProduct, includeWarranty)}
+            className="flex-[1.15] rounded-2xl bg-[#e42529] hover:bg-[#c21418] py-1.5 active:scale-[0.98] transition-all shadow-[0_10px_24px_-8px_rgb(228_37_41/0.6)]"
+          >
+            <span className="block text-sm font-extrabold text-white leading-tight">Buy now</span>
+            <span className="block text-[11px] font-bold text-white/90 mt-px">
+              at ₹{product.price.toLocaleString('en-IN')}
+            </span>
+          </button>
+        </div>
+      </div>
+
+      {/* Fullscreen Image Lightbox Modal */}
+      {isLightboxOpen && (
+        <div
+          onClick={() => setIsLightboxOpen(false)}
+          className="fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex flex-col justify-between p-3 sm:p-6 animate-in fade-in duration-200"
+        >
+          {/* Top Bar */}
+          <div
+            className="flex items-center justify-between text-white max-w-5xl mx-auto w-full z-10"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div>
+              <p className="text-xs uppercase tracking-wider text-gray-400 font-bold">{product.brand}</p>
+              <h3 className="text-sm sm:text-base font-extrabold truncate max-w-xs sm:max-w-xl">{product.name}</h3>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-gray-400 font-bold">
+                {activeImage + 1} / {allImages.length}
+              </span>
+              <button
+                onClick={() => setIsLightboxOpen(false)}
+                className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/25 flex items-center justify-center text-white transition-colors"
+                aria-label="Close fullscreen"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+
+          {/* Middle Area: Prev / Large Image / Next */}
+          <div
+            className="flex-1 flex items-center justify-center relative my-2 max-w-5xl mx-auto w-full"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {allImages.length > 1 && (
+              <button
+                onClick={() => setActiveImage((i) => (i - 1 + allImages.length) % allImages.length)}
+                className="absolute left-2 sm:left-4 z-10 w-11 h-11 rounded-full bg-white/15 hover:bg-white/30 text-white flex items-center justify-center backdrop-blur-md transition-all active:scale-95"
+                aria-label="Previous image"
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </button>
+            )}
+
+            <img
+              src={allImages[activeImage]}
+              alt={product.name}
+              onError={onImgError}
+              className="max-h-[68vh] sm:max-h-[75vh] max-w-full object-contain rounded-xl drop-shadow-[0_20px_50px_rgba(0,0,0,0.8)] select-none"
+            />
+
+            {allImages.length > 1 && (
+              <button
+                onClick={() => setActiveImage((i) => (i + 1) % allImages.length)}
+                className="absolute right-2 sm:right-4 z-10 w-11 h-11 rounded-full bg-white/15 hover:bg-white/30 text-white flex items-center justify-center backdrop-blur-md transition-all active:scale-95"
+                aria-label="Next image"
+              >
+                <ChevronRight className="w-6 h-6" />
+              </button>
+            )}
+          </div>
+
+          {/* Bottom Thumbnails */}
+          {allImages.length > 1 && (
+            <div
+              className="flex gap-2 justify-center py-2 overflow-x-auto no-scrollbar z-10"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {allImages.map((img, i) => (
+                <button
+                  key={i}
+                  onClick={() => setActiveImage(i)}
+                  className={`w-12 h-12 sm:w-14 sm:h-14 rounded-xl border-2 p-1 bg-white/10 backdrop-blur-md transition-all shrink-0 ${
+                    activeImage === i ? 'border-[#e42529] scale-110 shadow-lg' : 'border-white/20 opacity-50 hover:opacity-100'
+                  }`}
+                >
+                  <img src={img} alt="" onError={onImgError} className="w-full h-full object-contain" />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};

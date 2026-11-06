@@ -1,0 +1,2 @@
+# TWA Digital Asset Links — serve assetlinks.json at /.well-known/assetlinks.json
+.well-known/assetlinks.json   /assetlinks.json   200
