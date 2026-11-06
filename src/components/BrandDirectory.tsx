@@ -10,8 +10,6 @@ import {
   CreditCard,
   Zap,
   PiggyBank,
-  Grid,
-  Wind,
 } from 'lucide-react';
 import type { ShopTile } from '../data/adminStore';
 import { loadCategoryTiles, loadDealTiles } from '../data/adminStore';
@@ -25,91 +23,27 @@ interface BrandDirectoryProps {
   dealTiles?: ShopTile[];
 }
 
-const BRAND_LOGOS: { name: string; filter: string; el: React.ReactNode }[] = [
-  {
-    name: 'Apple',
-    filter: 'Apple',
-    el: <span className="text-[26px] font-extrabold text-gray-500 tracking-tight">Apple</span>,
-  },
-  {
-    name: 'Samsung',
-    filter: 'Samsung',
-    el: (
-      <span className="bg-[#1428a0] text-white text-[11px] font-black italic px-3 py-1 rounded-[50%] tracking-wide">
-        SAMSUNG
-      </span>
-    ),
-  },
-  {
-    name: 'OnePlus',
-    filter: 'OnePlus',
-    el: (
-      <span className="border-[3px] border-[#eb0028] text-[#eb0028] text-xl font-black px-1.5 leading-none">
-        1+
-      </span>
-    ),
-  },
-  {
-    name: 'Mi',
-    filter: 'Xiaomi',
-    el: (
-      <span className="bg-[#ff6900] text-white text-xl font-black w-10 h-10 flex items-center justify-center rounded-[4px]">
-        mi
-      </span>
-    ),
-  },
-  {
-    name: 'Lenovo',
-    filter: 'Lenovo',
-    el: <span className="text-[22px] font-black text-[#e2231a] tracking-tight">Lenovo</span>,
-  },
-  {
-    name: 'LG',
-    filter: 'LG',
-    el: (
-      <span className="border-[3px] border-[#d6108a] text-[#d6108a] text-xl font-black w-10 h-10 flex items-center justify-center rounded-full">
-        LG
-      </span>
-    ),
-  },
-  {
-    name: 'HP',
-    filter: 'HP',
-    el: (
-      <span className="border-[3px] border-[#0096d6] text-[#0096d6] text-xl font-black italic w-10 h-10 flex items-center justify-center rounded-full">
-        hp
-      </span>
-    ),
-  },
-  {
-    name: 'Vivo',
-    filter: 'Vivo',
-    el: <span className="text-[22px] font-bold text-[#415fff] tracking-wide">vivo</span>,
-  },
-  {
-    name: 'Dell',
-    filter: 'Dell',
-    el: (
-      <span className="border-[2.5px] border-[#007db8] text-[#007db8] text-sm font-black w-10 h-10 flex items-center justify-center rounded-full">
-        DELL
-      </span>
-    ),
-  },
-  {
-    name: 'Philips',
-    filter: 'Philips',
-    el: <span className="text-lg font-black text-[#0b5ed7] tracking-wide">PHILIPS</span>,
-  },
+const BRAND_LOGOS: { name: string; filter: string; logo?: string; el?: React.ReactNode }[] = [
+  { name: 'Apple', filter: 'Apple', logo: '/brands/apple.svg' },
+  { name: 'Samsung', filter: 'Samsung', logo: '/brands/samsung.svg' },
+  { name: 'OnePlus', filter: 'OnePlus', logo: '/brands/oneplus.svg' },
+  { name: 'Mi', filter: 'Xiaomi', logo: '/brands/xiaomi.svg' },
+  { name: 'Lenovo', filter: 'Lenovo', logo: '/brands/lenovo.svg' },
   {
     name: 'Oppo',
     filter: 'Oppo',
     el: <span className="text-[22px] font-bold text-[#2fa84f] tracking-[0.2em]">oppo</span>,
   },
+  { name: 'HP', filter: 'HP', logo: '/brands/hp.svg' },
+  { name: 'Vivo', filter: 'Vivo', logo: '/brands/vivo.svg' },
+  { name: 'Google', filter: 'Google', logo: '/brands/google.svg' },
   {
-    name: 'Nokia',
-    filter: 'Nokia',
-    el: <span className="text-lg font-black text-[#124191] tracking-widest">NOKIA</span>,
+    name: 'Nothing',
+    filter: 'Nothing',
+    el: <span className="text-lg font-black text-[#141414] tracking-[0.15em]">NOTHING</span>,
   },
+  { name: 'Sony', filter: 'Sony', logo: '/brands/sony.svg' },
+  { name: 'LG', filter: 'LG', logo: '/brands/lg.svg' },
 ];
 
 const CATEGORY_ICONS: Record<string, React.ReactNode> = {
@@ -118,8 +52,6 @@ const CATEGORY_ICONS: Record<string, React.ReactNode> = {
   tablets: <Tablet className="w-9 h-9" strokeWidth={1.2} />,
   televisions: <Tv className="w-9 h-9" strokeWidth={1.2} />,
   laptops: <Laptop className="w-9 h-9" strokeWidth={1.2} />,
-  airconditioners: <Wind className="w-9 h-9" strokeWidth={1.2} />,
-  all: <Grid className="w-9 h-9" strokeWidth={1.2} />,
   cameras: <Monitor className="w-9 h-9" strokeWidth={1.2} />,
 };
 
@@ -165,13 +97,17 @@ export const BrandDirectory: React.FC<BrandDirectoryProps> = ({
                   tabIndex={i >= BRAND_LOGOS.length ? -1 : 0}
                   className="h-14 w-24 shrink-0 flex items-center justify-center hover:bg-gray-50 transition-colors cursor-pointer"
                 >
-                  {b.el}
+                  {b.logo ? (
+                    <img src={b.logo} alt={b.name} className="max-h-7 max-w-[68px] object-contain" loading="lazy" />
+                  ) : (
+                    b.el
+                  )}
                 </button>
               ))}
             </div>
           </div>
         </div>
-        <div className="hidden md:grid grid-cols-3 sm:grid-cols-4 gap-x-2 gap-y-7">
+        <div className="hidden md:grid grid-cols-4 gap-x-2 gap-y-3 content-start auto-rows-min">
           {BRAND_LOGOS.map((b) => (
             <button
               key={b.name}
@@ -179,7 +115,11 @@ export const BrandDirectory: React.FC<BrandDirectoryProps> = ({
               title={b.name}
               className="h-14 min-w-0 px-1 flex items-center justify-center hover:bg-gray-50 transition-colors cursor-pointer"
             >
-              {b.el}
+              {b.logo ? (
+                <img src={b.logo} alt={b.name} className="max-h-8 max-w-[76px] object-contain" loading="lazy" />
+              ) : (
+                b.el
+              )}
             </button>
           ))}
         </div>
@@ -197,7 +137,7 @@ export const BrandDirectory: React.FC<BrandDirectoryProps> = ({
                 c.span ? 'col-span-2' : ''
               }`}
             >
-              {CATEGORY_ICONS[c.target] || <Grid className="w-9 h-9" strokeWidth={1.2} />}
+              {CATEGORY_ICONS[c.target] || <Smartphone className="w-9 h-9" strokeWidth={1.2} />}
               <span className="text-sm font-bold text-gray-900 text-center leading-tight">{c.label}</span>
             </button>
           ))}

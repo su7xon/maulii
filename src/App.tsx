@@ -34,6 +34,7 @@ import {
   loadCategoryTiles, saveCategoryTiles, loadDealTiles, saveDealTiles, ShopTile,
   DEFAULT_CATEGORY_TILES, DEFAULT_DEAL_TILES,
   sanitizeSlides, sanitizeBanners, sanitizeLaunches, sanitizeCategories,
+  filterHiddenCategoryTiles,
   fixProductImages, fixImageUrl,
 } from './data/adminStore';
 import { fetchCloudStore, saveCloudKey } from './lib/cloudStore';
@@ -77,8 +78,10 @@ export default function App() {
           setAdminLaunches(sanitizeLaunches(cloud.launches));
         if (Array.isArray(cloud.slides) && cloud.slides.length > 0)
           setAdminSlides(sanitizeSlides(cloud.slides));
-        if (Array.isArray(cloud.categoryTiles) && cloud.categoryTiles.length > 0)
-          setCategoryTiles(cloud.categoryTiles as ShopTile[]);
+        if (Array.isArray(cloud.categoryTiles) && cloud.categoryTiles.length > 0) {
+          const cleanedTiles = filterHiddenCategoryTiles(cloud.categoryTiles as ShopTile[]);
+          if (cleanedTiles.length > 0) setCategoryTiles(cleanedTiles);
+        }
         if (Array.isArray(cloud.dealTiles) && cloud.dealTiles.length > 0)
           setDealTiles(cloud.dealTiles as ShopTile[]);
         setCloudReady(true);

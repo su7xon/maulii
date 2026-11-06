@@ -168,9 +168,17 @@ export const DEFAULT_CATEGORY_TILES: ShopTile[] = [
   { label: 'Tablets', target: 'tablets' },
   { label: "Tv's", target: 'televisions' },
   { label: 'Laptops', target: 'laptops' },
-  { label: 'ACs', target: 'airconditioners' },
-  { label: 'All Products', target: 'all', span: true },
 ];
+
+// ACs / All Products ab shop se hata diye — purane saved tiles bhi filter hote hain.
+const HIDDEN_CATEGORY_TARGETS = ['airconditioners', 'all'];
+
+const sanitizeCategoryTiles = (v: ShopTile[]): ShopTile[] =>
+  v.filter((t) => !HIDDEN_CATEGORY_TARGETS.includes(t.target));
+
+/** Cloud se aaye tiles par bhi wahi filter — warna ACs / All Products wapas aa jate hain. */
+export const filterHiddenCategoryTiles = (v: ShopTile[]): ShopTile[] =>
+  sanitizeCategoryTiles(v);
 
 export const DEFAULT_DEAL_TILES: ShopTile[] = [
   { label: 'Super Deals', target: 'deals' },
@@ -183,7 +191,8 @@ export const DEFAULT_DEAL_TILES: ShopTile[] = [
 
 export const loadCategoryTiles = (): ShopTile[] => {
   const v = read<ShopTile[] | null>(K.categoryTiles, null);
-  return Array.isArray(v) && v.length > 0 ? v : DEFAULT_CATEGORY_TILES;
+  const cleaned = Array.isArray(v) ? sanitizeCategoryTiles(v) : [];
+  return cleaned.length > 0 ? cleaned : DEFAULT_CATEGORY_TILES;
 };
 export const saveCategoryTiles = (v: ShopTile[]) => write(K.categoryTiles, v);
 
