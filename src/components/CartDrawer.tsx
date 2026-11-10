@@ -12,10 +12,11 @@ import {
   CheckCircle2, 
   Check, 
   ShoppingBag,
-  Sparkles
+  Sparkles,
+  Banknote
 } from 'lucide-react';
 import { CartItem } from '../types';
-import { COUPONS, calcCouponDiscount, validateCoupon } from '../lib/coupons';
+import { COUPONS, calcCouponDiscount, validateCoupon, calcCashDiscount } from '../lib/coupons';
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -25,7 +26,7 @@ interface CartDrawerProps {
   onToggleWarranty: (productId: string) => void;
   onRemoveItem: (productId: string) => void;
   onClearCart: () => void;
-  onCheckout: () => void;
+  onCheckout: (paymentMethod: 'upi' | 'card' | 'cod') => void;
   currentCity: string;
   currentPincode: string;
 }
@@ -46,7 +47,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
   const [couponError, setCouponError] = useState('');
   const [orderPlaced, setOrderPlaced] = useState(false);
-  const [selectedPayment] = useState('upi');
+  const [selectedPayment, setSelectedPayment] = useState<'upi' | 'card' | 'cod'>('upi');
 
   if (!isOpen) return null;
 
@@ -69,9 +70,10 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
 
   // Coupon discount logic (shared helper — Checkout same use karta)
   const couponDiscount = calcCouponDiscount(appliedCoupon, totalSellingPrice);
+  const cashDiscount = calcCashDiscount(cartItems, selectedPayment, totalSellingPrice);
 
-  const finalPayable = Math.max(0, totalSellingPrice + warrantyTotal - couponDiscount);
-  const totalSavings = productDiscount + couponDiscount;
+  const finalPayable = Math.max(0, totalSellingPrice + warrantyTotal - couponDiscount - cashDiscount);
+  const totalSavings = productDiscount + couponDiscount + cashDiscount;
 
   const handleApplyCoupon = (codeToApply?: string) => {
     const code = (codeToApply || couponCode).trim().toUpperCase();
@@ -333,6 +335,36 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
               )}
             </div>
 
+            {/* Payment Method (Cash Discount Preview) */}
+            <div className="bg-white rounded-xl p-3 border border-gray-200 space-y-2">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-gray-800">
+                <Banknote className="w-4 h-4 text-amber-600" />
+                <span>Payment Mode</span>
+              </div>
+              <div className="space-y-1">
+                <label className={`block p-2 rounded-lg cursor-pointer transition-colors border ${selectedPayment === 'cod' ? 'border-amber-200 bg-amber-50' : 'border-gray-200'}`}>
+                  <input
+                    type="radio"
+                    checked={selectedPayment === 'cod'}
+                    onChange={() => setSelectedPayment('cod')}
+                    className="accent-amber-600 w-3.5 h-3.5"
+                  />
+                  <span className="text-xs font-medium text-gray-800">Cash on Delivery (COD)</span>
+                  <span className="text-[10px] text-emerald-600 font-bold ml-auto">₹1000 off + Vivo Y/S 10% extra</span>
+                </label>
+                <label className={`block p-2 rounded-lg cursor-pointer transition-colors border ${selectedPayment === 'upi' ? 'border-[#e42529] bg-red-50/40' : 'border-gray-200'}`}>
+                  <input
+                    type="radio"
+                    checked={selectedPayment === 'upi'}
+                    onChange={() => setSelectedPayment('upi')}
+                    className="accent-[#e42529] w-3.5 h-3.5"
+                  />
+                  <span className="text-xs font-medium text-gray-800">UPI / Online</span>
+                  <span className="text-[10px] text-gray-500 ml-auto">No extra cash discount</span>
+                </label>
+              </div>
+            </div>
+
             {/* Bill Summary */}
             <div className="bg-white rounded-xl p-3 border border-gray-200 text-xs space-y-2">
               <h3 className="font-bold text-gray-900 border-b border-gray-100 pb-1.5">
@@ -360,6 +392,12 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                 <div className="flex justify-between text-emerald-700 font-medium">
                   <span>Coupon Savings ({appliedCoupon}):</span>
                   <span>- ₹{couponDiscount.toLocaleString('en-IN')}</span>
+                </div>
+              )}
+              {cashDiscount > 0 && (
+                <div className="flex justify-between text-emerald-700 font-medium">
+                  <span>Cash Purchase Discount:</span>
+                  <span>- ₹{cashDiscount.toLocaleString('en-IN')}</span>
                 </div>
               )}
 
@@ -391,7 +429,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
             </div>
 
             <button
-              onClick={onCheckout}
+              onClick={() => onCheckout(selectedPayment)}
               className="bg-[#e42529] hover:bg-[#c21418] text-white px-5 py-2.5 rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-md active:scale-95 transition-all"
             >
               <span>Checkout Now</span>

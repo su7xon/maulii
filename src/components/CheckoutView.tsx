@@ -25,7 +25,7 @@ import {
   openRazorpayCheckout,
   verifyRazorpayPayment,
 } from '../lib/payment';
-import { COUPONS, calcCouponDiscount, validateCoupon } from '../lib/coupons';
+import { COUPONS, calcCouponDiscount, validateCoupon, calcCashDiscount } from '../lib/coupons';
 import {
   type Address,
   type AddressErrors,
@@ -48,6 +48,7 @@ interface CheckoutViewProps {
   onBack: () => void;
   onOrderDone: () => void;
   onClearCart: () => void;
+  initialPaymentMethod?: 'upi' | 'card' | 'cod';
 }
 
 const PAY_LABELS: Record<string, string> = { upi: 'UPI', card: 'Card', cod: 'Cash on Delivery' };
@@ -63,6 +64,7 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
   onBack,
   onOrderDone,
   onClearCart,
+  initialPaymentMethod,
 }) => {
   const [step, setStep] = useState<'address' | 'payment' | 'success'>('address');
   const [addresses, setAddresses] = useState<Address[]>(loadAddresses);
@@ -74,7 +76,7 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
   const [editing, setEditing] = useState<boolean>(() => loadAddresses().length === 0);
   const [pinLoading, setPinLoading] = useState(false);
   const [errors, setErrors] = useState<AddressErrors>({});
-  const [payMethod, setPayMethod] = useState('upi');
+  const [payMethod, setPayMethod] = useState<'upi' | 'card' | 'cod'>(initialPaymentMethod || 'upi');
   const [payError, setPayError] = useState('');
   const [placing, setPlacing] = useState(false);
   const [orderId] = useState(() => `MM-${Math.floor(100000 + Math.random() * 900000)}`);
@@ -90,7 +92,8 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
     return a + (i.product.price > 50000 ? 2499 : 1299) * i.quantity;
   }, 0);
   const couponDiscount = calcCouponDiscount(appliedCoupon, subtotal);
-  const total = Math.max(0, subtotal + warrantyTotal - couponDiscount);
+  const cashDiscount = calcCashDiscount(cartItems, payMethod, subtotal);
+  const total = Math.max(0, subtotal + warrantyTotal - couponDiscount - cashDiscount);
   const savings = mrpTotal - subtotal;
   const eta = new Date(Date.now() + 5 * 864e5).toLocaleDateString('en-IN', {
     weekday: 'short', day: 'numeric', month: 'short',
@@ -661,6 +664,12 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
                   <span>− ₹{couponDiscount.toLocaleString('en-IN')}</span>
                 </div>
               )}
+              {cashDiscount > 0 && (
+                <div className="flex justify-between text-emerald-700 font-semibold">
+                  <span>Cash Purchase Discount</span>
+                  <span>− ₹{cashDiscount.toLocaleString('en-IN')}</span>
+                </div>
+              )}
               <div className="flex justify-between text-gray-600">
                 <span>Delivery</span>
                 <span className="font-bold text-emerald-600">FREE</span>
@@ -675,9 +684,11 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
             </div>
             {step === 'payment' && (
               <div className="p-4 pt-0">
-                <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 mb-2.5 text-[11px] font-bold text-amber-800">
-                  <span className="text-sm">🎁</span>
-                  <span>Cover + Mobile Safety Guard FREE from us on this order!</span>
+                <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2.5 mb-3">
+                  <span className="text-sm">🛡️</span>
+                  <span className="text-[11px] font-bold text-emerald-800 leading-relaxed">
+                    🎁 <strong>Free Tempered Glass + Back Cover</strong> with every order — complimentary from Mauli!
+                  </span>
                 </div>
                 <button onClick={placeOrder} disabled={placing}
                   className="w-full bg-[#e42529] hover:bg-[#c21418] disabled:opacity-70 text-white py-3 rounded-xl text-sm font-bold shadow flex items-center justify-center gap-2 active:scale-[0.99]">

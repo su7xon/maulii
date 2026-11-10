@@ -12,6 +12,7 @@ export interface Product {
   image: string;
   additionalImages?: string[];
   features: string[];
+  description?: string;
   expressDelivery: boolean;
   inStock: boolean;
   emiStartsAt: number;

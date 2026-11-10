@@ -99,46 +99,6 @@ export const NEW_LAUNCHES: NewLaunchItem[] = [
 
 export const BEST_SELLING_PHONES: Product[] = [
   {
-    id: 'oneplus-nord-ce6-lite',
-    name: 'OnePlus Nord CE6 Lite 5G 128 GB, 8 GB RAM, Vivid Mint, Mobile Phone',
-    brand: 'OnePlus',
-    category: 'mobiles',
-    subCategory: 'Smartphones',
-    price: 22999,
-    mrp: 24999,
-    discountPercentage: 8,
-    rating: 4.6,
-    ratingCount: 2420,
-    image: 'https://fdn2.gsmarena.com/vv/bigpic/oneplus-nord-ce6-lite.jpg',
-    offerRibbon: '₹2K Inst Disc + 6M NCEMI HDFC CCEMI*',
-    bestPrice: 20999,
-    phoneGraphicSpecs: [
-      "Segment's fastest phone* 1.03Mn+ AnTuTu score",
-      "Segment's highest 144 FPS gaming*",
-      "Up to 2 days of power* 7000mAh Battery",
-      "Powered by OxygenOS"
-    ],
-    features: [
-      '144Hz ultra smooth FHD+ Display',
-      '7000mAh battery with 45W fast charging',
-      '50MP Sony main camera sensor',
-      'Single speaker with 300% Ultra Volume Mode'
-    ],
-    expressDelivery: true,
-    inStock: true,
-    emiStartsAt: 1113,
-    badge: 'BESTSELLER',
-    reliancePoints: 230,
-    specs: {
-      Display: '6.72-inch FHD+ 144Hz LCD',
-      Processor: 'MediaTek Dimensity 7400 Apex',
-      RAM: '8 GB',
-      Storage: '128 GB',
-      Camera: '50 MP + 2 MP',
-      Battery: '7000 mAh'
-    }
-  },
-  {
     id: 'redmi-15c-5g',
     name: 'Redmi 15C 5G 128 GB, 6 GB RAM, Dusk Purple, Mobile Phone',
     brand: 'Xiaomi',
@@ -289,112 +249,6 @@ export const BEST_SELLING_PHONES: Product[] = [
 
 export const MIDNIGHT_DISCOUNT_PHONES: Product[] = [
   {
-    id: 'oneplus-15-black-256',
-    name: 'OnePlus 15 5G 256 GB, 12 GB RAM, Infinite Black, Mobile Phone',
-    brand: 'OnePlus',
-    category: 'mobiles',
-    subCategory: 'Smartphones',
-    price: 85999,
-    mrp: 89999,
-    discountPercentage: 4,
-    rating: 4.9,
-    ratingCount: 1650,
-    image: 'https://fdn2.gsmarena.com/vv/bigpic/oneplus-15.jpg',
-    offerRibbon: '₹3K Inst Disc+6M NCEMI HDFC CCEMI*',
-    bestPrice: 80779,
-    phoneGraphicSpecs: [
-      'Never Settle'
-    ],
-    features: [
-      'Snapdragon 8 Elite Gen 5 flagship 3nm chip',
-      '7300mAh Battery with 120W charging',
-      '50MP Triple Main Camera System',
-      '1.5K 165Hz ProXDR with Ultra HDR'
-    ],
-    expressDelivery: true,
-    inStock: true,
-    emiStartsAt: 4167,
-    badge: 'FLAGSHIP',
-    reliancePoints: 860,
-    specs: {
-      Display: '6.78-inch 1.5K 165Hz LTPO AMOLED',
-      Processor: 'Snapdragon 8 Elite Gen 5',
-      RAM: '12 GB LPDDR5X',
-      Storage: '256 GB UFS 4.1',
-      Camera: '50MP + 50MP Periscope + 50MP Ultra-wide'
-    }
-  },
-  {
-    id: 'oneplus-15-sandstorm-256',
-    name: 'OnePlus 15 5G 256 GB, 12 GB RAM, Sand Storm, Mobile Phone',
-    brand: 'OnePlus',
-    category: 'mobiles',
-    subCategory: 'Smartphones',
-    price: 85999,
-    mrp: 89999,
-    discountPercentage: 4,
-    rating: 4.9,
-    ratingCount: 1420,
-    image: 'https://fdn2.gsmarena.com/vv/bigpic/oneplus-15.jpg',
-    offerRibbon: '₹3K Inst Disc+6M NCEMI HDFC CCEMI*',
-    bestPrice: 80779,
-    phoneGraphicSpecs: [
-      'Never Settle'
-    ],
-    features: [
-      'Velvet Sand Storm texture rear glass',
-      'Snapdragon 8 Elite Gen 5 Extreme Performance',
-      'Master Mode photography',
-      'IP68 + IP69 extreme water protection'
-    ],
-    expressDelivery: true,
-    inStock: true,
-    emiStartsAt: 4167,
-    badge: 'FLAGSHIP',
-    reliancePoints: 860,
-    specs: {
-      Display: '6.78-inch 1.5K 165Hz LTPO AMOLED',
-      Processor: 'Snapdragon 8 Elite Gen 5',
-      RAM: '12 GB LPDDR5X',
-      Storage: '256 GB UFS 4.1'
-    }
-  },
-  {
-    id: 'oneplus-15-black-512',
-    name: 'OnePlus 15 5G 512 GB, 16 GB RAM, Infinite Black, Mobile Phone',
-    brand: 'OnePlus',
-    category: 'mobiles',
-    subCategory: 'Smartphones',
-    price: 93999,
-    mrp: 99999,
-    discountPercentage: 6,
-    rating: 4.9,
-    ratingCount: 880,
-    image: 'https://fdn2.gsmarena.com/vv/bigpic/oneplus-15.jpg',
-    offerRibbon: '₹3K Inst Disc+6M NCEMI HDFC CCEMI*',
-    bestPrice: 88619,
-    phoneGraphicSpecs: [
-      'Never Settle'
-    ],
-    features: [
-      'Massive 16GB RAM + 512GB Ultra-speed Storage',
-      'Snapdragon 8 Elite Gen 5 with Ray Tracing Engine',
-      'Dual Cryo-velocity vapor cooling',
-      'OxygenOS 16 with AI Toolbox'
-    ],
-    expressDelivery: true,
-    inStock: true,
-    emiStartsAt: 4554,
-    badge: '16GB RAM',
-    reliancePoints: 940,
-    specs: {
-      Display: '6.78-inch 1.5K 165Hz LTPO',
-      Processor: 'Snapdragon 8 Elite Gen 5',
-      RAM: '16 GB',
-      Storage: '512 GB'
-    }
-  },
-  {
     id: 'pixel-10-frost',
     name: 'Google Pixel 10 256 GB, 12 GB RAM, Frost, Mobile Phone',
     brand: 'Google',
@@ -496,7 +350,6 @@ export const MIDNIGHT_DISCOUNT_PHONES: Product[] = [
 export const BRANDS = [
   { name: 'Apple', logo: '', models: '42+ Models', tag: 'Official Reseller' },
   { name: 'Samsung', logo: 'SAMSUNG', models: '88+ Models', tag: 'Galaxy AI' },
-  { name: 'OnePlus', logo: '1+', models: '24+ Models', tag: 'Never Settle' },
   { name: 'Xiaomi', logo: 'mi', models: '65+ Models', tag: 'Redmi & Xiaomi' },
   { name: 'Oppo', logo: 'OPPO', models: '34+ Models', tag: 'Reno & K-Series' },
   { name: 'Vivo', logo: 'vivo', models: '40+ Models', tag: 'V-Series Zeiss' },

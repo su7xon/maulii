@@ -83,6 +83,21 @@ export const HelpPaymentStrip: React.FC = () => {
             ))}
           </div>
         </div>
+
+        {/* Free cover & glass */}
+        <div className="md:col-span-3">
+          <h4 className="text-[15px] font-medium text-gray-900 text-center tracking-wide mb-4">
+            FREE GIFT
+          </h4>
+          <div className="flex flex-col items-center justify-center gap-2 text-center">
+            <div className="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-1">
+              🛡️
+            </div>
+            <p className="text-xs font-bold text-emerald-800 leading-tight">
+              Free Tempered Glass + Back Cover on every order!
+            </p>
+          </div>
+        </div>
       </div>
     </section>
   );

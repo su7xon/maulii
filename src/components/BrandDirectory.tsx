@@ -26,7 +26,6 @@ interface BrandDirectoryProps {
 const BRAND_LOGOS: { name: string; filter: string; logo?: string; el?: React.ReactNode }[] = [
   { name: 'Apple', filter: 'Apple', logo: '/brands/apple.svg' },
   { name: 'Samsung', filter: 'Samsung', logo: '/brands/samsung.svg' },
-  { name: 'OnePlus', filter: 'OnePlus', logo: '/brands/oneplus.svg' },
   { name: 'Mi', filter: 'Xiaomi', logo: '/brands/xiaomi.svg' },
   { name: 'Lenovo', filter: 'Lenovo', logo: '/brands/lenovo.svg' },
   {

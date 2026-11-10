@@ -451,11 +451,17 @@ export const ProductPage: React.FC<ProductPageProps> = ({
           {/* About + specs */}
           <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm">
             <h3 className="text-sm font-extrabold mb-2">About this item</h3>
-            <ul className="space-y-1.5 text-[13px] text-gray-600">
-              {product.features.map((f, i) => (
-                <li key={i} className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-[#e42529] mt-1.5 shrink-0" />{f}</li>
-              ))}
-            </ul>
+            {product.description ? (
+              <p className="text-[13px] text-gray-700 leading-relaxed">
+                {product.description}
+              </p>
+            ) : (
+              <ul className="space-y-1.5 text-[13px] text-gray-600">
+                {product.features.map((f, i) => (
+                  <li key={i} className="flex gap-2"><span className="w-1.5 h-1.5 rounded-full bg-[#e42529] mt-1.5 shrink-0" />{f}</li>
+                ))}
+              </ul>
+            )}
           </div>
 
           <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm">

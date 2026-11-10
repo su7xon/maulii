@@ -61,7 +61,6 @@ export const Header: React.FC<HeaderProps> = ({
   ).slice(0, 5);
 
   const popularSearches = [
-    'OnePlus Nord CE6 Lite',
     'iPhone 16',
     'Galaxy S24 Ultra',
     'Pixel 10',

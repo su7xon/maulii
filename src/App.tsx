@@ -163,6 +163,7 @@ export default function App() {
   const [isPincodeModalOpen, setIsPincodeModalOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [checkoutPaymentMethod, setCheckoutPaymentMethod] = useState<'upi' | 'card' | 'cod'>('upi');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(() => {
     try {
       const id = new URLSearchParams(window.location.search).get('product');
@@ -412,7 +413,8 @@ export default function App() {
   };
 
   // Cart drawer → checkout page
-  const handleGoCheckout = () => {
+  const handleGoCheckout = (paymentMethod: 'upi' | 'card' | 'cod' = 'upi') => {
+    setCheckoutPaymentMethod(paymentMethod);
     setIsCartOpen(false);
     setIsCheckoutOpen(true);
     window.scrollTo({ top: 0 });
@@ -598,6 +600,7 @@ export default function App() {
             cartItems={cart}
             defaultCity={currentCity}
             defaultPincode={currentPincode}
+            initialPaymentMethod={checkoutPaymentMethod}
             onBack={() => {
               setIsCheckoutOpen(false);
               window.scrollTo({ top: 0 });
