@@ -46,7 +46,7 @@ ${catalog}
 
 Instructions:
 1. Always answer accurately based on the website catalog and current product details. Never invent fake prices, models, or false promises.
-2. Reply in the same language the user asks in (English, Hindi, or Hinglish).
+2. Always reply in Hinglish (Hindi + English mix) — like "Yeh phone accha hai, camera bhi great hai." Keep it friendly and conversational.
 3. Keep responses concise, friendly, and helpful (2-4 lines max). Use bullet points for comparisons if helpful.
 4. If asked about a phone not in the catalog, politely say it's currently not available on Mauli Mobile and recommend the closest alternative from the catalog.`;
 }
@@ -95,51 +95,52 @@ async function askGroq(system: string, history: Msg[]): Promise<string> {
 
 function fallbackReply(history: Msg[]): string {
   const lastUser = history.slice().reverse().find((m) => m.role === 'user');
-  if (!lastUser) return 'Hello! How can I help you today?';
+  if (!lastUser) return 'Namaste! 🙏 Main Mauli Assistant hoon. Aapko kahan madad chahiye?';
+
   const q = lastUser.text.toLowerCase();
 
-  const greetings = ['hello', 'hi', 'hey', 'namaste', 'namaskar'];
+  const greetings = ['hello', 'hi', 'hey', 'namaste', 'namaskar', 'yo'];
   if (greetings.some((g) => q.includes(g))) {
-    return 'Hello! 🙏 I am Mauli Assistant. You can ask me about phones, prices, offers, or EMI options.';
+    return 'Namaste! 🙏 Main Mauli Assistant hoon. Phone ke baare mein kuch bhi poocho — price, offer, EMI, ya koi model suggest karna ho to batao.';
   }
 
-  if (q.includes('price') || q.includes('cost') || q.includes('₹') || q.includes('rs')) {
-    return 'I can help you check phone prices! Which model are you interested in? I can also tell you about EMI options and cash on delivery.';
+  if (q.includes('price') || q.includes('cost') || q.includes('₹') || q.includes('rs') || q.includes('kitna')) {
+    return 'Mujhe batao kaunsa phone dekh rahe ho, main uska price aur offer bata dunga. EMI bhi available hai zyadatar phones pe.';
   }
 
   if (q.includes('emi') || q.includes('installment')) {
-    return 'Yes, EMI is available on most phones! No-Cost EMI options are available with select bank cards. EMI starts from low monthly amounts depending on the phone price.';
+    return 'Haan, EMI available hai almost sab phones par! No-Cost EMI bhi hai select bank cards par. Monthly EMI kam hai, poocho kisi specific model ke baare mein.';
   }
 
   if (q.includes('offer') || q.includes('discount') || q.includes('sale')) {
-    return 'We have bank offers (10% instant discount on HDFC, ICICI, SBI, PNB cards) and cash purchase discounts. Cash on Delivery also gets ₹1000 off + extra 10% for Vivo Y/S series!';
+    return 'Bank offers available hain — HDFC, ICICI, SBI, PNB cards par 10% instant discount. Cash pe ₹1000 off + Vivo Y/S series pe extra 10% off bhi hai!';
   }
 
   if (q.includes('cod') || q.includes('cash') || q.includes('delivery')) {
-    return 'Yes, Cash on Delivery (COD) is available! We offer free delivery across Mumbai, and cash purchases get ₹1000 off. Vivo Y/S series gets an extra 10% off with cash payment.';
+    return 'Haan, Cash on Delivery (COD) available hai! Free delivery Mumbai mein. Cash purchase par ₹1000 off milta hai, aur Vivo Y/S pe extra 10% bhi.';
   }
 
   if (q.includes('warranty') || q.includes('guarantee') || q.includes('return')) {
-    return 'All phones come with 1-year brand warranty and 7-day hassle-free replacement policy. Extended warranty is also available at checkout.';
+    return 'Sab phones par 1-year brand warranty aur 7-day replacement policy hai. Extended warranty bhi add kar sakte ho checkout pe.';
   }
 
   if (q.includes('vivo') && (q.includes('y') || q.includes('s'))) {
-    return 'Vivo Y series and S series are available! Cash purchase gets ₹1000 off + extra 10% off. Y series is budget-friendly with long battery life; S series has great cameras and stylish design.';
+    return 'Vivo Y series aur S series available hain! Y series budget-friendly hai battery acchi hai. S series mein camera aur design great hai. Cash pe extra discount bhi hai.';
   }
 
   if (q.includes('realme')) {
-    return 'Realme phones are available with great performance and fast charging. Realme P4 series, 15 series, 16 series, and C series budget phones are in stock.';
+    return 'Realme phones available hain — P4 series, 15 series, 16 series, aur C series budget phones bhi hain. Performance acchi hai aur fast charging bhi milti hai.';
   }
 
   if (q.includes('samsung') || q.includes('apple') || q.includes('iphone') || q.includes('oppo')) {
-    return 'Samsung, Apple iPhone, and Oppo phones are all available! Which brand or model are you looking for?';
+    return 'Samsung, Apple iPhone, aur Oppo sab available hain! Kaunsa brand ya model dekhna hai aapko?';
   }
 
-  if (q.includes('best') || q.includes('recommend') || q.includes('suggest')) {
-    return 'I can recommend phones based on your budget! Are you looking for a budget phone under ₹20000, mid-range ₹20000-40000, or a flagship above ₹40000?';
+  if (q.includes('best') || q.includes('recommend') || q.includes('suggest') || q.includes('kaun sa')) {
+    return 'Budget batao aapka — ₹20000 ke neeche, ₹20000-40000 ke beech, ya flagship above ₹40000? Main suggest kar dunga best phone.';
   }
 
-  return "I'm here to help! You can ask me about phone prices, EMI, offers, COD, warranty, or specific brands like Vivo, Realme, Samsung, Apple, or Oppo.";
+  return "Main yahan hoon help karne ke liye! Phone price, EMI, offer, COD, warranty, ya koi brand — Vivo, Realme, Samsung, Apple, Oppo — kuch bhi poocho.";
 }
 
 const QUICK = ['What are the best offers?', 'Is EMI available?', 'Compare with similar', 'Good for gaming?'];
