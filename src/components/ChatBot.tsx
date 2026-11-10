@@ -53,7 +53,10 @@ Instructions:
 
 async function askGroq(system: string, history: Msg[]): Promise<string> {
   const key = import.meta.env.VITE_GROQ_API_KEY as string | undefined;
-  if (!key) throw new Error('Chat API key missing. Add VITE_GROQ_API_KEY to .env');
+  if (!key) {
+    // Fallback: local keyword-based replies when no Groq API key is configured
+    return fallbackReply(history);
+  }
   const messages = [
     { role: 'system', content: system },
     ...history.slice(-10).map((m) => ({ role: m.role, content: m.text })),
@@ -88,6 +91,55 @@ async function askGroq(system: string, history: Msg[]): Promise<string> {
     }
   }
   throw new Error(lastErr || 'All models failed');
+}
+
+function fallbackReply(history: Msg[]): string {
+  const lastUser = history.slice().reverse().find((m) => m.role === 'user');
+  if (!lastUser) return 'Hello! How can I help you today?';
+  const q = lastUser.text.toLowerCase();
+
+  const greetings = ['hello', 'hi', 'hey', 'namaste', 'namaskar'];
+  if (greetings.some((g) => q.includes(g))) {
+    return 'Hello! 🙏 I am Mauli Assistant. You can ask me about phones, prices, offers, or EMI options.';
+  }
+
+  if (q.includes('price') || q.includes('cost') || q.includes('₹') || q.includes('rs')) {
+    return 'I can help you check phone prices! Which model are you interested in? I can also tell you about EMI options and cash on delivery.';
+  }
+
+  if (q.includes('emi') || q.includes('installment')) {
+    return 'Yes, EMI is available on most phones! No-Cost EMI options are available with select bank cards. EMI starts from low monthly amounts depending on the phone price.';
+  }
+
+  if (q.includes('offer') || q.includes('discount') || q.includes('sale')) {
+    return 'We have bank offers (10% instant discount on HDFC, ICICI, SBI, PNB cards) and cash purchase discounts. Cash on Delivery also gets ₹1000 off + extra 10% for Vivo Y/S series!';
+  }
+
+  if (q.includes('cod') || q.includes('cash') || q.includes('delivery')) {
+    return 'Yes, Cash on Delivery (COD) is available! We offer free delivery across Mumbai, and cash purchases get ₹1000 off. Vivo Y/S series gets an extra 10% off with cash payment.';
+  }
+
+  if (q.includes('warranty') || q.includes('guarantee') || q.includes('return')) {
+    return 'All phones come with 1-year brand warranty and 7-day hassle-free replacement policy. Extended warranty is also available at checkout.';
+  }
+
+  if (q.includes('vivo') && (q.includes('y') || q.includes('s'))) {
+    return 'Vivo Y series and S series are available! Cash purchase gets ₹1000 off + extra 10% off. Y series is budget-friendly with long battery life; S series has great cameras and stylish design.';
+  }
+
+  if (q.includes('realme')) {
+    return 'Realme phones are available with great performance and fast charging. Realme P4 series, 15 series, 16 series, and C series budget phones are in stock.';
+  }
+
+  if (q.includes('samsung') || q.includes('apple') || q.includes('iphone') || q.includes('oppo')) {
+    return 'Samsung, Apple iPhone, and Oppo phones are all available! Which brand or model are you looking for?';
+  }
+
+  if (q.includes('best') || q.includes('recommend') || q.includes('suggest')) {
+    return 'I can recommend phones based on your budget! Are you looking for a budget phone under ₹20000, mid-range ₹20000-40000, or a flagship above ₹40000?';
+  }
+
+  return "I'm here to help! You can ask me about phone prices, EMI, offers, COD, warranty, or specific brands like Vivo, Realme, Samsung, Apple, or Oppo.";
 }
 
 const QUICK = ['What are the best offers?', 'Is EMI available?', 'Compare with similar', 'Good for gaming?'];
