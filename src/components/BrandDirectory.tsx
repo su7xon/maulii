@@ -23,24 +23,16 @@ interface BrandDirectoryProps {
   dealTiles?: ShopTile[];
 }
 
-const BRAND_LOGOS: { name: string; filter: string; logo?: string; el?: React.ReactNode }[] = [
+const BRAND_LOGOS: { name: string; filter: string; logo: string }[] = [
   { name: 'Apple', filter: 'Apple', logo: '/brands/apple.svg' },
   { name: 'Samsung', filter: 'Samsung', logo: '/brands/samsung.svg' },
   { name: 'Mi', filter: 'Xiaomi', logo: '/brands/xiaomi.svg' },
   { name: 'Lenovo', filter: 'Lenovo', logo: '/brands/lenovo.svg' },
-  {
-    name: 'Oppo',
-    filter: 'Oppo',
-    el: <span className="text-[22px] font-bold text-[#2fa84f] tracking-[0.2em]">oppo</span>,
-  },
+  { name: 'Oppo', filter: 'Oppo', logo: '/brands/oppo.svg' },
   { name: 'HP', filter: 'HP', logo: '/brands/hp.svg' },
   { name: 'Vivo', filter: 'Vivo', logo: '/brands/vivo.svg' },
   { name: 'Google', filter: 'Google', logo: '/brands/google.svg' },
-  {
-    name: 'Nothing',
-    filter: 'Nothing',
-    el: <span className="text-lg font-black text-[#141414] tracking-[0.15em]">NOTHING</span>,
-  },
+  { name: 'Nothing', filter: 'Nothing', logo: '/brands/nothing.svg' },
   { name: 'Sony', filter: 'Sony', logo: '/brands/sony.svg' },
   { name: 'LG', filter: 'LG', logo: '/brands/lg.svg' },
 ];
@@ -96,11 +88,7 @@ export const BrandDirectory: React.FC<BrandDirectoryProps> = ({
                   tabIndex={i >= BRAND_LOGOS.length ? -1 : 0}
                   className="h-14 w-24 shrink-0 flex items-center justify-center hover:bg-gray-50 transition-colors cursor-pointer"
                 >
-                  {b.logo ? (
-                    <img src={b.logo} alt={b.name} className="max-h-7 max-w-[68px] object-contain" loading="lazy" />
-                  ) : (
-                    b.el
-                  )}
+                  <img src={b.logo} alt={b.name} className="h-6 w-auto max-w-[72px] object-contain" loading="lazy" />
                 </button>
               ))}
             </div>
@@ -114,11 +102,7 @@ export const BrandDirectory: React.FC<BrandDirectoryProps> = ({
               title={b.name}
               className="h-14 min-w-0 px-1 flex items-center justify-center hover:bg-gray-50 transition-colors cursor-pointer"
             >
-              {b.logo ? (
-                <img src={b.logo} alt={b.name} className="max-h-8 max-w-[76px] object-contain" loading="lazy" />
-              ) : (
-                b.el
-              )}
+              <img src={b.logo} alt={b.name} className="h-7 w-auto max-w-[80px] object-contain" loading="lazy" />
             </button>
           ))}
         </div>
