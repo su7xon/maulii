@@ -560,8 +560,12 @@ export default function App() {
     );
   }
 
+  // Bottom nav visibility — used to conditionally apply bottom padding so
+  // there's no blank space at the end when the nav isn't rendered.
+  const showBottomNav = !selectedProduct && !isCheckoutOpen;
+
   return (
-    <div className="min-h-screen bg-[#f4f6f9] text-[#1a1a1a] flex flex-col selection:bg-[#e42529] selection:text-white pb-16 md:pb-0">
+    <div className={`min-h-screen bg-[#f4f6f9] text-[#1a1a1a] flex flex-col selection:bg-[#e42529] selection:text-white md:pb-0 ${showBottomNav ? 'pb-16' : 'pb-4'}`}>
       
       {/* Top Header — Hidden on Profile tab to match native Flipkart Account screen */}
       {activeTab !== 'profile' && !isCheckoutOpen && (
@@ -787,7 +791,7 @@ export default function App() {
       {!selectedProduct && !isCheckoutOpen && activeTab !== 'profile' && <Footer />}
 
       {/* Fixed Mobile Bottom Navigation (hidden on PDP — sticky buy bar lives there — and checkout) */}
-      {!selectedProduct && !isCheckoutOpen && (
+      {showBottomNav && (
       <div className="md:hidden">
         <BottomNav
           activeTab={activeTab}

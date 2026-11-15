@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export interface LandingSlide {
@@ -34,11 +34,10 @@ interface LandingHeroProps {
   slides?: LandingSlide[];
 }
 
-export const LandingHero: React.FC<LandingHeroProps> = ({
-  slides = LANDING_SLIDES,
-}) => {
-  const [index, setIndex] = useState(0);
+export const LandingHero: React.FC<LandingHeroProps> = ({ slides = LANDING_SLIDES }) => {
+  const [index, setIndex] = useState(1); // Start at first *real* slide (index 1 in extended array)
   const [paused, setPaused] = useState(false);
+  const [skipTransition, setSkipTransition] = useState(false); // Disable CSS transition during clone reset
   const [isDesktop, setIsDesktop] = useState<boolean>(() => {
     try {
       return window.matchMedia('(min-width: 640px)').matches;
@@ -46,6 +45,12 @@ export const LandingHero: React.FC<LandingHeroProps> = ({
       return false;
     }
   });
+
+  // Extended slides for seamless infinite loop: [last, ...all, first]
+  const extendedSlides = useMemo(() => {
+    if (slides.length <= 1) return slides;
+    return [slides[slides.length - 1], ...slides, slides[0]];
+  }, [slides]);
 
   useEffect(() => {
     try {
@@ -58,12 +63,32 @@ export const LandingHero: React.FC<LandingHeroProps> = ({
     }
   }, []);
 
+  // When we land on a clone edge, instantly reset to the real equivalent without visual jump
+  useEffect(() => {
+    if (slides.length <= 1) return;
+    if (index === 0) {
+      // On clone of last slide -> jump to real last slide
+      setSkipTransition(true);
+      setTimeout(() => {
+        setIndex(slides.length);
+        setSkipTransition(false);
+      }, 50);
+    } else if (index === extendedSlides.length - 1) {
+      // On clone of first slide -> jump to real first slide
+      setSkipTransition(true);
+      setTimeout(() => {
+        setIndex(1);
+        setSkipTransition(false);
+      }, 50);
+    }
+  }, [index, slides.length, extendedSlides.length]);
+
   const next = useCallback(() => {
-    setIndex((p) => (p + 1) % slides.length);
-  }, [slides.length]);
+    setIndex((p) => p + 1);
+  }, []);
 
   const prev = () => {
-    setIndex((p) => (p - 1 + slides.length) % slides.length);
+    setIndex((p) => p - 1);
   };
 
   // Swipe (touch + mouse drag): ungli se banners badlo
@@ -81,16 +106,18 @@ export const LandingHero: React.FC<LandingHeroProps> = ({
     if (paused || slides.length < 2) return;
     const t = setInterval(next, 4500);
     return () => clearInterval(t);
-  }, [next, paused, slides.length, index]);
+  }, [next, paused, slides.length]);
 
   if (slides.length === 0) return null;
-  const slide = slides[index];
+  const slide = extendedSlides[index];
   // Desktop pe laptop wali photo, mobile pe mobile wali (na ho to desktop wali fallback)
   const imgSrc = !isDesktop && slide.mobileSrc ? slide.mobileSrc : slide.src;
 
   return (
     <div
-      className="relative w-full overflow-hidden border-x border-b border-gray-100 bg-white group touch-pan-y select-none"
+      className={`relative w-full overflow-hidden border-x border-b border-gray-100 bg-white group touch-pan-y select-none ${
+        skipTransition ? 'transition-none' : ''
+      }`}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onTouchStart={(e) => { swipeX.current = e.touches[0].clientX; }}
@@ -114,14 +141,14 @@ export const LandingHero: React.FC<LandingHeroProps> = ({
       {slides.length > 1 && (
         <>
           <button
-            onClick={prev}
+            onClick={(e) => { e.stopPropagation(); prev(); }}
             aria-label="Previous banner"
             className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/45 hover:bg-black/70 text-white hidden sm:flex items-center justify-center backdrop-blur border border-white/20 shadow-xl transition-all hover:scale-105 active:scale-95 opacity-0 group-hover:opacity-100"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
           <button
-            onClick={next}
+            onClick={(e) => { e.stopPropagation(); next(); }}
             aria-label="Next banner"
             className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/45 hover:bg-black/70 text-white hidden sm:flex items-center justify-center backdrop-blur border border-white/20 shadow-xl transition-all hover:scale-105 active:scale-95 opacity-0 group-hover:opacity-100"
           >
@@ -129,16 +156,24 @@ export const LandingHero: React.FC<LandingHeroProps> = ({
           </button>
 
           <div className="absolute bottom-3 inset-x-0 flex justify-center gap-1.5">
-            {slides.map((s, i) => (
-              <button
-                key={s.id}
-                onClick={() => setIndex(i)}
-                aria-label={`Go to banner ${i + 1}`}
-                className={`h-1.5 rounded-full transition-all duration-300 shadow ${
-                  index === i ? 'w-7 bg-gray-900' : 'w-1.5 bg-gray-900/30 hover:bg-gray-900/60'
-                }`}
-              />
-            ))}
+            {slides.map((s, i) => {
+              // Map extended index back to real slide index for dots
+              const realIndex = index === 0 ? slides.length - 1 : index === extendedSlides.length - 1 ? 0 : index - 1;
+              const active = i === realIndex;
+              return (
+                <button
+                  key={s.id}
+                  onClick={() => {
+                    // Jump directly to this slide (offset by +1 for the leading clone)
+                    setIndex(i + 1);
+                  }}
+                  aria-label={`Go to banner ${i + 1}`}
+                  className={`h-1.5 rounded-full transition-all duration-300 shadow ${
+                    active ? 'w-7 bg-gray-900' : 'w-1.5 bg-gray-900/30 hover:bg-gray-900/60'
+                  }`}
+                />
+              );
+            })}
           </div>
         </>
       )}
