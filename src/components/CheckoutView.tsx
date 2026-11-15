@@ -76,7 +76,7 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
   const [selectedId, setSelectedId] = useState<string>(() => defaultAddress(loadAddresses())?.id || '');
   const [form, setForm] = useState<Address>(() => {
     const d = defaultAddress(loadAddresses());
-    return d ? { ...d } : { ...emptyAddress(), city: defaultCity || '', pincode: defaultPincode || '' };
+    return d ? { ...d } : emptyAddress();
   });
   const [editing, setEditing] = useState<boolean>(() => loadAddresses().length === 0);
   const [pinLoading, setPinLoading] = useState(false);
@@ -124,7 +124,7 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
   };
 
   const startNewAddress = () => {
-    setForm({ ...emptyAddress(), city: defaultCity || '', pincode: defaultPincode || '' });
+    setForm({ ...emptyAddress() });
     setErrors({});
     setEditing(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
