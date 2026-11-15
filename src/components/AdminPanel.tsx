@@ -151,10 +151,6 @@ function AdminLogin({ onSuccess }: { onSuccess: () => void }) {
             Access Admin Console
           </button>
         </form>
-
-        <p className="text-gray-400 text-[11px] text-center mt-4">
-          Password: <span className="font-mono font-bold text-gray-600">mauli123</span>
-        </p>
       </div>
     </div>
   );
