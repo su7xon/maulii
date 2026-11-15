@@ -910,7 +910,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                     <p className="text-xs text-gray-500">Hero banner images on homepage</p>
                   </div>
                   <button
-                    onClick={() => props.onSaveSlides([...slides, { id: `slide-${Date.now()}`, src: '', alt: 'New banner' }])}
+                    onClick={() => props.onSaveSlides([...slides, { id: `slide-${Date.now()}`, src: '', mobileSrc: '', alt: 'New banner' }])}
                     className={btnGhost + ' flex items-center gap-1.5'}
                   >
                     <Plus className="w-3.5 h-3.5" /> Add Slide
@@ -932,7 +932,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                           label="Desktop Banner (16:5)"
                           folder="banners"
                           value={s.src}
-                          onChange={(url) => props.onSaveSlides(slides.map((x) => x.id === s.id ? { ...x, src: url } : x))}
+                          onChange={(url) => props.onSaveSlides(slides.map((x) => x.id === s.id ? { ...x, src: url, mobileSrc: url } : x))}
                         />
                       </div>
                       <button

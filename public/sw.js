@@ -1,4 +1,4 @@
-const CACHE = 'maulii-v3';
+const CACHE = 'maulii-v4';
 const PRECACHE = ['/', '/index.html', '/mauli-logo.png', '/icon.svg', '/manifest.webmanifest'];
 
 self.addEventListener('install', (e) => {

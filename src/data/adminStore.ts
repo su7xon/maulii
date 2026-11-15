@@ -33,7 +33,27 @@ function valid<T>(list: T[] | null | undefined, hasImage: (x: T) => boolean): T[
 
 export const sanitizeSlides = (v: unknown): LandingSlide[] => {
   const clean = valid(v as LandingSlide[], (s) => Boolean(s?.src));
-  return clean.length > 0 ? clean : LANDING_SLIDES;
+  const list = clean.length > 0 ? clean : LANDING_SLIDES;
+  return list.map((s) => {
+    let src = s.src;
+    let mobileSrc = s.mobileSrc;
+
+    // Migrate old deleted banner paths to new responsive banners
+    if (src === '/banners/banner-s25fe.png') src = '/banners/apple.jpeg';
+    else if (src === '/banners/banner-vivo-v60.png') src = '/banners/vivo.jpeg';
+    else if (src === '/banners/banner-oppo-f31.png') src = '/banners/oppo.jpeg';
+
+    // If mobileSrc is missing or points to old deleted banner-mobile-*.png, sync with src
+    if (!mobileSrc || mobileSrc.includes('banner-mobile') || mobileSrc.includes('banner-')) {
+      mobileSrc = src;
+    }
+
+    return {
+      ...s,
+      src,
+      mobileSrc,
+    };
+  });
 };
 
 export const sanitizeBanners = (v: unknown): Banner[] => {

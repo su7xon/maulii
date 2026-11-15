@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, Sparkles, ArrowRight } from 'lucide-react';
 import { BANNERS } from '../data/mockData';
 import { Banner } from '../types';
+import { onImgError } from '../lib/imgFallback';
 
 interface HeroBannersProps {
   banners?: Banner[];
@@ -77,6 +78,7 @@ export const HeroBanners: React.FC<HeroBannersProps> = ({ banners }) => {
             <img
               src={banner.image}
               alt={banner.title}
+              onError={onImgError}
               className="w-full h-full object-cover"
             />
             <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 to-transparent py-1.5 text-center text-[10px] text-white font-bold tracking-wide">

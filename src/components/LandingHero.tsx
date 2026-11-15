@@ -109,9 +109,17 @@ export const LandingHero: React.FC<LandingHeroProps> = ({ slides = LANDING_SLIDE
   }, [next, paused, slides.length]);
 
   if (slides.length === 0) return null;
-  const slide = extendedSlides[index];
-  // Desktop pe laptop wali photo, mobile pe mobile wali (na ho to desktop wali fallback)
-  const imgSrc = !isDesktop && slide.mobileSrc ? slide.mobileSrc : slide.src;
+  const slide = extendedSlides[index] || extendedSlides[0] || LANDING_SLIDES[0];
+
+  // Clean up any legacy deleted banner URLs (e.g. from older localStorage or cloud snapshots)
+  const isLegacyDeleted = (url?: string) =>
+    Boolean(url && (url.includes('banner-mobile-') || url.includes('banner-s25fe') || url.includes('banner-vivo') || url.includes('banner-oppo')));
+
+  const rawMobileSrc = isLegacyDeleted(slide.mobileSrc) ? undefined : slide.mobileSrc;
+  const rawSrc = isLegacyDeleted(slide.src) ? '/banners/oppo.jpeg' : slide.src;
+
+  // Desktop pe laptop wali photo, mobile pe mobile wali (na ho ya dead ho to desktop/src wali fallback)
+  const imgSrc = (!isDesktop && rawMobileSrc) ? rawMobileSrc : rawSrc;
 
   return (
     <div
@@ -132,9 +140,23 @@ export const LandingHero: React.FC<LandingHeroProps> = ({ slides = LANDING_SLIDE
       >
         <img
           src={imgSrc}
-          alt={slide.alt}
+          alt={slide.alt || 'Banner'}
           className="w-full h-auto object-cover aspect-[16/10] sm:aspect-[16/5] bg-[#f4f6f9]"
           loading="eager"
+          onError={(e) => {
+            const target = e.currentTarget;
+            // 1. If mobileSrc failed, fall back to rawSrc
+            if (rawSrc && target.src !== rawSrc && !target.dataset.triedSrc) {
+              target.dataset.triedSrc = '1';
+              target.src = rawSrc;
+              return;
+            }
+            // 2. If rawSrc also fails, fall back to bundled oppo.jpeg banner
+            if (!target.dataset.fallback) {
+              target.dataset.fallback = '1';
+              target.src = '/banners/oppo.jpeg';
+            }
+          }}
         />
       </div>
 
