@@ -4,7 +4,7 @@ import { loadScript } from './loadScript';
  * Razorpay payment helper.
  *
  * SECURITY: Key SECRET kabhi frontend me nahi. Sirf Key ID public hai.
- * Order create + signature verify server (netlify/functions/razorpay.ts) pe hota hai.
+ * Order create + signature verify server (Vercel API route /api/razorpay) pe hota hai.
  */
 
 export const RAZORPAY_KEY_ID = (import.meta.env.VITE_RAZORPAY_KEY_ID as string | undefined) || '';
@@ -30,7 +30,7 @@ interface CreateOrderResponse {
  * aur razorpay_order_id wapas deta hai.
  */
 export async function createRazorpayOrder(amountInPaise: number, receipt: string): Promise<string> {
-  const res = await fetch('/.netlify/functions/razorpay?action=create', {
+  const res = await fetch('/api/razorpay?action=create', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ amount: amountInPaise, currency: 'INR', receipt }),
@@ -45,7 +45,7 @@ export async function createRazorpayOrder(amountInPaise: number, receipt: string
 /** Server pe signature verify karo — payment asli hai ya nahi. */
 export async function verifyRazorpayPayment(p: RazorpaySuccess): Promise<boolean> {
   try {
-    const res = await fetch('/.netlify/functions/razorpay?action=verify', {
+    const res = await fetch('/api/razorpay?action=verify', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
