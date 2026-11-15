@@ -11,39 +11,39 @@ interface LoveNote {
 const NOTES: LoveNote[] = [
   {
     id: 'l1',
-    quote: 'Galaxy S25 FE liya — pure Mumbai me isse best price nahi mila. Bill, warranty sab proper. Full trust!',
+    quote: 'Pure Mumbai me isse best price nahi mila. Bill, warranty sab proper seal pack mila. Full trust on Mauli Mobile!',
     name: 'Anjali Sharma',
-    meta: 'Galaxy S25 FE • Mumbai',
+    meta: 'Mumbai',
   },
   {
     id: 'l2',
-    quote: 'iPhone 16 on No-Cost EMI, upar se cover aur safety guard free mila. Staff ne sab samjha ke diya.',
+    quote: 'No-Cost EMI pe order kiya tha, upar se cover aur safety guard free mila. Staff ne sab samjha ke diya.',
     name: 'Rahul Verma',
-    meta: 'iPhone 16 • Thane',
+    meta: 'Thane',
   },
   {
     id: 'l3',
-    quote: 'Vivo V60 lene gayi thi, Zeiss camera live demo karke dikhaya. 100% genuine piece, seal pack.',
+    quote: 'Store visit kiya tha, live demo karke dikhaya. 100% genuine piece, brand sealed with official bill.',
     name: 'Priya Nair',
-    meta: 'Vivo V60 • Pune',
+    meta: 'Pune',
   },
   {
     id: 'l4',
-    quote: 'Subah order kiya Oppo F31, 3 ghante me delivery! Itni fast service expect nahi ki thi.',
+    quote: 'Subah order kiya aur 3 ghante me doorstep delivery! Itni fast service expect nahi ki thi.',
     name: 'Amit Patel',
-    meta: 'Oppo F31 5G • Mumbai',
+    meta: 'Mumbai',
   },
   {
     id: 'l5',
-    quote: 'Purana phone exchange me achha rate mila aur Pixel 9 pe coupon bhi laga. Paisa vasool deal.',
+    quote: 'Purana phone exchange me achha rate mila aur extra coupon discount bhi mila. Paisa vasool deal.',
     name: 'Sneha Reddy',
-    meta: 'Pixel 9 • Navi Mumbai',
+    meta: 'Navi Mumbai',
   },
   {
     id: 'l6',
-    quote: 'Nothing Phone 2a Plus liya tha, ek chhota issue aaya — turant support mila, bina bahane ke. Customer for life!',
+    quote: 'Online order kiya tha, ek chhota doubt aaya to turant WhatsApp support mila bina bahane ke. Customer for life!',
     name: 'Vikram Singh',
-    meta: 'Nothing 2a Plus • Kalyan',
+    meta: 'Kalyan',
   },
 ];
 

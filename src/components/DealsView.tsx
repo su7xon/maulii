@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Flame, Tag, Zap, Percent, BadgeCheck, Copy, Check } from 'lucide-react';
+import { Tag, Zap, Percent, BadgeCheck, Copy, Check } from 'lucide-react';
 import { Product, BankOffer } from '../types';
 import { DealsCountdown } from './DealsCountdown';
 import { ProductCard } from './ProductCard';
@@ -92,18 +92,6 @@ export const DealsView: React.FC<DealsViewProps> = ({
     <div className="space-y-4 pb-12">
       {/* Live Deal of the Day Banner */}
       <DealsCountdown />
-
-      {/* Sale Header */}
-      <div className="bg-linear-to-r from-[#e42529] via-[#c21418] to-[#80070a] p-4 text-white rounded-b-xl shadow-sm">
-        <div className="flex items-center gap-1.5 text-[#ffe500] text-xs font-bold uppercase tracking-wider mb-1">
-          <Flame className="w-4 h-4 fill-[#ffe500]" />
-          <span>Mega Electronics Carnival</span>
-        </div>
-        <h2 className="text-xl font-black leading-tight">Lightning Deals & Bank Offers</h2>
-        <p className="text-xs text-white/90 mt-0.5">
-          Exclusive online discounts with No-Cost EMI and instant bank cashbacks.
-        </p>
-      </div>
 
       {/* Mauli Coupons Section */}
       <div className="px-3">
