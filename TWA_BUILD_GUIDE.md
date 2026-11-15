@@ -120,7 +120,7 @@ npm run build
 
 Verify it's live:
 ```
-https://maulimobile.netlify.app/.well-known/assetlinks.json
+https://www.maulimobile.in/.well-known/assetlinks.json
 ```
 Should return the JSON with your real fingerprint.
 
@@ -154,13 +154,13 @@ Install the unsigned APK on a physical device:
 adb install android/app-release.apk
 ```
 
-The app should open `https://maulimobile.netlify.app/` in fullscreen standalone mode (no browser address bar).
+The app should open `https://www.maulimobile.in/` in fullscreen standalone mode (no browser address bar).
 
 ---
 
 ## Important notes
 
 - **TWA requires HTTPS** — Netlify provides this automatically.
-- **The domain must match** `host` in `twa-manifest.json` (`maulimobile.netlify.app`).
+- **The domain must match** `host` in `twa-manifest.json` (`www.maulimobile.in`).
 - If you change the package ID (`com.maulimobile.app`), update `assetlinks.json` and `twa-manifest.json` consistently.
 - The app uses localStorage + Firebase fallback when env keys are missing — for production, set `VITE_GROQ_API_KEY`, Firebase, and Razorpay vars in Netlify environment settings.
