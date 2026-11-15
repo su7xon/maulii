@@ -111,11 +111,6 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange, label
       )}
 
       {err && <p className="text-[11px] text-red-600 font-medium mt-1">{err}</p>}
-      {!isCloudConfigured && (
-        <p className="text-[10px] text-amber-600 font-medium mt-1">
-          Firebase keys nahi mili — upload sirf is browser me dikhega. Sabko dikhane ke liye .env me Firebase config + Storage enable karo.
-        </p>
-      )}
       {value && (
         <img src={value} alt="preview" className="mt-2 w-20 h-20 object-contain bg-gray-50 border border-gray-200 rounded-lg" />
       )}

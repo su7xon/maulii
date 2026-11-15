@@ -9,3 +9,11 @@ coverage/
 
 # Local Netlify folder
 .netlify
+
+.vercel
+.env*
+
+# Firebase service account key (secret — never commit)
+firebase-service-account.json
+*serviceAccount*.json
+*service-account*.json

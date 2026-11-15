@@ -1,4 +1,4 @@
-const CACHE = 'maulii-v2';
+const CACHE = 'maulii-v3';
 const PRECACHE = ['/', '/index.html', '/mauli-logo.png', '/icon.svg', '/manifest.webmanifest'];
 
 self.addEventListener('install', (e) => {
@@ -39,6 +39,22 @@ self.addEventListener('fetch', (e) => {
   }
 
   // Static assets: cache first, refresh in background
+  // Images: network-first so new banner/product images load immediately
+  if (req.url.match(/\.(jpg|jpeg|png|webp|svg)$/i)) {
+    e.respondWith(
+      fetch(req)
+        .then((res) => {
+          if (res.ok) {
+            const copy = res.clone();
+            caches.open(CACHE).then((c) => c.put(req, copy));
+          }
+          return res;
+        })
+        .catch(() => caches.match(req))
+    );
+    return;
+  }
+
   e.respondWith(
     caches.match(req).then((hit) => {
       const net = fetch(req)

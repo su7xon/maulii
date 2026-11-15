@@ -1,6 +1,5 @@
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { db, storage, isCloudConfigured } from './firebase';
+import { db, isCloudConfigured } from './firebase';
 
 const DOC_ID = 'mauli-store';
 
@@ -22,23 +21,67 @@ function writeLocal(key: string, val: unknown) {
   }
 }
 
-/** Upload image file. Firebase Storage when configured, else base64 data-URL (local only). */
-export async function uploadStoreImage(file: File, folder = 'mauli'): Promise<string> {
-  if (isCloudConfigured && storage) {
-    const clean = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-    const path = `${folder}/${Date.now()}-${clean}`;
-    const snap = await uploadBytes(ref(storage, path), file, {
-      contentType: file.type,
-    });
-    return getDownloadURL(snap.ref);
-  }
-  // Fallback: inline base64 (works without Firebase, stays on this browser)
+/**
+ * Image upload → compressed JPEG base64 data-URL.
+ *
+ * Ye base64 value admin object (category/banner/etc) me save hoti hai aur
+ * saveCloudKey() se Firestore (stores/mauli-store) me sync ho jati hai.
+ * Firebase Storage use NAHI hota — uske CORS issues upload fail kara rahe the
+ * (browser preflight 404). Image ko resize + compress karke base64 chhota
+ * rakha jata hai taki Firestore ki 1MB document limit ke andar fit rahe,
+ * warna cloud sync fail ho jata.
+ */
+const MAX_IMG_DIM = 1280;
+const JPEG_QUALITY = 0.75;
+
+function rawBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const r = new FileReader();
     r.onload = () => resolve(String(r.result));
     r.onerror = () => reject(new Error('File read failed'));
     r.readAsDataURL(file);
   });
+}
+
+function loadImage(src: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const el = new Image();
+    el.onload = () => resolve(el);
+    el.onerror = () => reject(new Error('Image decode failed'));
+    el.src = src;
+  });
+}
+
+async function compressImage(file: File): Promise<string | null> {
+  const url = URL.createObjectURL(file);
+  try {
+    const img = await loadImage(url);
+    const scale = Math.min(1, MAX_IMG_DIM / Math.max(img.width, img.height));
+    const w = Math.max(1, Math.round(img.width * scale));
+    const h = Math.max(1, Math.round(img.height * scale));
+    const canvas = document.createElement('canvas');
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return null;
+    // Transparent PNG ke liye white background (JPEG transparency support nahi karta)
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, w, h);
+    ctx.drawImage(img, 0, 0, w, h);
+    return canvas.toDataURL('image/jpeg', JPEG_QUALITY);
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+}
+
+export async function uploadStoreImage(file: File, _folder = 'mauli'): Promise<string> {
+  try {
+    const dataUrl = await compressImage(file);
+    if (dataUrl) return dataUrl;
+  } catch {
+    // decode/compress fail → raw base64 fallback (kam se kam image to aayegi)
+  }
+  return rawBase64(file);
 }
 
 export interface CloudSnapshot {
