@@ -221,7 +221,7 @@ export default function App() {
   }, []);
 
   // Notifications
-  const [toast, setToast] = useState<{ message: string; type: 'cart' | 'info' } | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: 'cart' | 'info'; product?: Product } | null>(null);
 
   // Wishlist with localStorage persistence
   const [wishlistIds, setWishlistIds] = useState<string[]>(() => {
@@ -320,8 +320,8 @@ export default function App() {
     }
   }, [toast]);
 
-  const showToast = (message: string, type: 'cart' | 'info' = 'info') => {
-    setToast({ message, type });
+  const showToast = (message: string, type: 'cart' | 'info' = 'info', product?: Product) => {
+    setToast({ message, type, product });
   };
 
   // Cart Actions
@@ -337,8 +337,7 @@ export default function App() {
       }
       return [...prev, { product, quantity: 1, selectedWarranty: withWarranty }];
     });
-    setConfettiActive(true);
-    showToast(`Added ${product.name.slice(0, 24)}... to Cart`, 'cart');
+    showToast(product.name, 'cart', product);
   };
 
   const handleUpdateQuantity = (productId: string, quantity: number) => {
@@ -865,6 +864,7 @@ export default function App() {
         <Toast
           message={toast.message}
           type={toast.type}
+          product={toast.product}
           onClose={() => setToast(null)}
           onViewCart={() => setIsCartOpen(true)}
         />
