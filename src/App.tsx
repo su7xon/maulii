@@ -563,35 +563,37 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#f4f6f9] text-[#1a1a1a] flex flex-col selection:bg-[#e42529] selection:text-white pb-16 md:pb-0">
       
-      {/* Top Header */}
-      <Header
-        cartCount={cart.reduce((acc, i) => acc + i.quantity, 0)}
-        currentPincode={currentPincode}
-        currentCity={currentCity}
-        onOpenPincodeModal={() => setIsPincodeModalOpen(true)}
-        onOpenCart={() => setIsCartOpen(true)}
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        onSelectProduct={(p) => handleSelectProduct(p)}
-        allProducts={ALL_PRODUCTS}
-        wishlistCount={wishlistIds.length}
-        onOpenWishlist={() => setIsWishlistOpen(true)}
-        onNavigateTab={(tab) => {
-          if (tab === 'cart') {
-            setIsCartOpen(true);
-          } else if (tab === 'home') {
-            // Logo click: full home reset (close product page, clear search/filters)
-            handleCloseProduct();
-            setSearchQuery('');
-            setFilter((prev) => ({ ...prev, brand: 'all' }));
-            setSelectedCategory('mobiles');
-            setBrowseMode(false);
-            setActiveTab('home');
-          } else {
-            setActiveTab(tab);
-          }
-        }}
-      />
+      {/* Top Header — Hidden on Profile tab to match native Flipkart Account screen */}
+      {activeTab !== 'profile' && !isCheckoutOpen && (
+        <Header
+          cartCount={cart.reduce((acc, i) => acc + i.quantity, 0)}
+          currentPincode={currentPincode}
+          currentCity={currentCity}
+          onOpenPincodeModal={() => setIsPincodeModalOpen(true)}
+          onOpenCart={() => setIsCartOpen(true)}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          onSelectProduct={(p) => handleSelectProduct(p)}
+          allProducts={ALL_PRODUCTS}
+          wishlistCount={wishlistIds.length}
+          onOpenWishlist={() => setIsWishlistOpen(true)}
+          onNavigateTab={(tab) => {
+            if (tab === 'cart') {
+              setIsCartOpen(true);
+            } else if (tab === 'home') {
+              // Logo click: full home reset (close product page, clear search/filters)
+              handleCloseProduct();
+              setSearchQuery('');
+              setFilter((prev) => ({ ...prev, brand: 'all' }));
+              setSelectedCategory('mobiles');
+              setBrowseMode(false);
+              setActiveTab('home');
+            } else {
+              setActiveTab(tab);
+            }
+          }}
+        />
+      )}
 
       {/* View Router — checkout & product pages take over like Flipkart PDP */}
       <main className="flex-1">
@@ -651,6 +653,16 @@ export default function App() {
         ) : activeTab === 'profile' ? (
           <ProfileView
             orders={orders}
+            categories={adminCategories}
+            recentProducts={recentProducts.length > 0 ? recentProducts : bestSellers}
+            onViewProduct={(p) => handleSelectProduct(p)}
+            onSelectCategory={(cat) => {
+              setSelectedCategory(cat);
+              setFilter((prev) => ({ ...prev, brand: 'all' }));
+              setBrowseMode(true);
+              setActiveTab('home');
+              window.scrollTo({ top: 0 });
+            }}
             onShopNow={() => {
               setSelectedCategory('mobiles');
               setBrowseMode(false);
@@ -660,6 +672,7 @@ export default function App() {
             onBuyAgain={handleBuyAgain}
             onUseAddress={handleUseAddress}
             onNotify={(m) => showToast(m, 'info')}
+            onOpenWishlist={() => setIsWishlistOpen(true)}
           />
         ) : (
           /* Home Tab */
@@ -791,8 +804,8 @@ export default function App() {
       </div>
       )}
 
-      {/* WhatsApp chat float — home/browse only (product page gets AI chatbot instead) */}
-      {!isCheckoutOpen && !selectedProduct && (
+      {/* WhatsApp chat float — home/browse only (hidden on checkout, PDP, and profile) */}
+      {!isCheckoutOpen && !selectedProduct && activeTab !== 'profile' && (
       <a
         href="https://wa.me/918237305111?text=Hi%20Mauli%20Mobile!%20I%20need%20information%20about%20mobiles."
         target="_blank"
