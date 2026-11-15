@@ -240,7 +240,7 @@ export const MobilesView: React.FC<MobilesViewProps> = ({
             className="flex items-stretch gap-2 sm:gap-3 overflow-x-auto no-scrollbar scroll-smooth py-2 px-1"
           >
             {bestList.map((phone) => (
-              <div key={phone.id} className="min-w-[160px] max-w-[185px] sm:min-w-[230px] sm:max-w-[260px] flex-1 shrink-0">
+              <div key={phone.id} className="min-w-[160px] max-w-[185px] sm:min-w-[230px] sm:max-w-[260px] flex-1 shrink-0 flex flex-col">
                 <ProductCard
                   product={phone}
                   isInCart={cartProductIds.includes(phone.id)}
@@ -299,7 +299,7 @@ export const MobilesView: React.FC<MobilesViewProps> = ({
             className="flex items-stretch gap-2 sm:gap-3 overflow-x-auto no-scrollbar scroll-smooth py-2 px-1"
           >
             {midnightList.map((phone) => (
-              <div key={phone.id} className="min-w-[160px] max-w-[185px] sm:min-w-[230px] sm:max-w-[260px] flex-1 shrink-0">
+              <div key={phone.id} className="min-w-[160px] max-w-[185px] sm:min-w-[230px] sm:max-w-[260px] flex-1 shrink-0 flex flex-col">
                 <ProductCard
                   product={phone}
                   isInCart={cartProductIds.includes(phone.id)}

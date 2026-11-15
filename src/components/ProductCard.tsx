@@ -80,55 +80,56 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
       {/* Product Information */}
       <div className="flex-1 flex flex-col pt-1.5 sm:pt-2">
-        <div>
-          {/* Rating */}
-          <div className="flex items-center gap-1.5 mb-1 flex-wrap">
-            <span className="inline-flex items-center gap-1 bg-emerald-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md">
+        {/* Rating & Express Row (fixed height h-5, no wrap so it never expands to 2 lines) */}
+        <div className="flex items-center justify-between gap-1 mb-1.5 h-5">
+          <div className="flex items-center gap-1 min-w-0">
+            <span className="inline-flex items-center gap-0.5 bg-emerald-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md shrink-0">
               {product.rating.toFixed(1)} <Star className="w-2.5 h-2.5 fill-white" />
             </span>
-            <span className="text-[10px] text-gray-400 font-medium">
+            <span className="text-[10px] text-gray-400 font-medium truncate">
               ({product.ratingCount.toLocaleString('en-IN')})
             </span>
-            {product.expressDelivery && (
-              <span className="ml-auto text-[9px] font-black text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded-full border border-orange-100 uppercase tracking-wide">
-                Express
+          </div>
+          {product.expressDelivery && (
+            <span className="text-[8.5px] font-black text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded-full border border-orange-100 uppercase tracking-tight shrink-0">
+              Express
+            </span>
+          )}
+        </div>
+
+        {/* Title (fixed height h-[34px] sm:h-[38px] so 1 or 2 lines take identical vertical space) */}
+        <h3 className="text-[12px] sm:text-[13px] font-semibold text-gray-900 line-clamp-2 h-[34px] sm:h-[38px] leading-tight group-hover:text-[#e42529] transition-colors mb-1 sm:mb-1.5 overflow-hidden">
+          {product.name}
+        </h3>
+
+        {/* Pricing Row (fixed height h-5) */}
+        <div className="flex items-baseline gap-1.5 h-5 mb-1.5">
+          <span className="text-[15px] sm:text-[16px] font-extrabold text-gray-900 tracking-tight">
+            ₹{product.price.toLocaleString('en-IN')}
+          </span>
+          <span className="text-[11px] text-gray-400 line-through font-medium">
+            ₹{product.mrp.toLocaleString('en-IN')}
+          </span>
+        </div>
+
+        {/* Best price / Offer Guarantee + Add to cart (Locked to bottom via mt-auto) */}
+        <div className="mt-auto pt-2 border-t border-dashed border-gray-200 flex flex-col justify-end">
+          <div className="h-5 mb-1.5 flex items-baseline justify-between gap-1 overflow-hidden">
+            {typeof calculatedBestPrice === 'number' && calculatedBestPrice > 0 && calculatedBestPrice < product.price ? (
+              <>
+                <span className="text-[10px] font-semibold text-gray-400 tracking-wide shrink-0">
+                  Best Price
+                </span>
+                <span className="text-[12px] sm:text-[13px] font-extrabold text-[#0a7d4f] tracking-tight">
+                  ₹{calculatedBestPrice.toLocaleString('en-IN')}
+                </span>
+              </>
+            ) : (
+              <span className="text-[10px] font-bold text-emerald-600 truncate">
+                Lowest Price Guaranteed
               </span>
             )}
           </div>
-
-          {/* Title */}
-          <h3 className="text-[12px] sm:text-[13px] font-semibold text-gray-900 line-clamp-2 min-h-[32px] sm:min-h-[36px] leading-snug group-hover:text-[#e42529] transition-colors mb-1 sm:mb-1.5">
-            {product.name}
-          </h3>
-          {variantCount !== undefined && variantCount > 1 && (
-            <p className="text-[10px] font-bold text-[#003380] bg-blue-50 border border-blue-100 rounded-md px-1.5 py-0.5 w-fit mb-1">
-              {variantCount} options • From ₹{product.price.toLocaleString('en-IN')}
-            </p>
-          )}
-
-          {/* Pricing */}
-          <div className="flex items-baseline gap-1.5 flex-wrap">
-            <span className="text-[15px] sm:text-[17px] font-extrabold text-gray-900 tracking-tight">
-              ₹{product.price.toLocaleString('en-IN')}
-            </span>
-            <span className="text-[11px] text-gray-400 line-through font-medium">
-              ₹{product.mrp.toLocaleString('en-IN')}
-            </span>
-          </div>
-        </div>
-
-        {/* Best price + Add to cart */}
-        <div className="mt-2.5 pt-2.5 border-t border-dashed border-gray-200">
-          {typeof calculatedBestPrice === 'number' && calculatedBestPrice > 0 && calculatedBestPrice < product.price && (
-            <div className="flex items-baseline justify-between gap-1 mb-1.5">
-              <span className="text-[10px] font-semibold text-gray-400 tracking-wide">
-                Best Price
-              </span>
-              <span className="text-[13px] sm:text-[14px] font-extrabold text-[#0a7d4f] tracking-tight">
-                ₹{calculatedBestPrice.toLocaleString('en-IN')}
-              </span>
-            </div>
-          )}
 
           <button
             type="button"
@@ -137,7 +138,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               e.stopPropagation();
               onAddToCart(product);
             }}
-            className={`w-full min-h-11 text-[11px] sm:text-xs font-bold py-2 rounded-xl transition-all duration-200 flex items-center justify-center gap-1 active:scale-[0.98] ${
+            className={`w-full h-10 sm:h-11 text-[11px] sm:text-xs font-bold rounded-xl transition-all duration-200 flex items-center justify-center gap-1 active:scale-[0.98] ${
               isInCart
                 ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                 : 'bg-[#e42529] text-white hover:bg-[#c81f23] shadow-[0_2px_8px_-2px_rgb(228_37_41/0.5)]'
@@ -145,11 +146,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           >
             {isInCart ? (
               <>
-                <Check className="w-3 h-3" /> In Cart
+                <Check className="w-3.5 h-3.5" /> In Cart
               </>
             ) : (
               <>
-                <Plus className="w-3 h-3" /> Add to Cart
+                <Plus className="w-3.5 h-3.5" /> Add to Cart
               </>
             )}
           </button>

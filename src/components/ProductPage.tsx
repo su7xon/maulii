@@ -524,10 +524,10 @@ export const ProductPage: React.FC<ProductPageProps> = ({
                     if (el) railRefs.current.set(rail.title, el);
                     else railRefs.current.delete(rail.title);
                   }}
-                  className="flex gap-3 overflow-x-auto no-scrollbar snap-x pb-2"
+                  className="flex items-stretch gap-3 overflow-x-auto no-scrollbar snap-x pb-2"
                 >
                   {rail.items.map((s) => (
-                    <div key={s.id} className="min-w-[200px] sm:min-w-[225px] max-w-[240px] snap-start">
+                    <div key={s.id} className="min-w-[200px] sm:min-w-[225px] max-w-[240px] snap-start flex flex-col">
                       <ProductCard
                         product={s}
                         isInCart={false}

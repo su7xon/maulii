@@ -34,9 +34,9 @@ export const RecentlyViewed: React.FC<RecentlyViewedProps> = ({
             Clear
           </button>
         </div>
-        <div className="flex gap-3 overflow-x-auto no-scrollbar snap-x pb-1">
+        <div className="flex items-stretch gap-3 overflow-x-auto no-scrollbar snap-x pb-1">
           {products.map((p) => (
-            <div key={p.id} className="w-[160px] sm:w-[190px] shrink-0 snap-start">
+            <div key={p.id} className="w-[160px] sm:w-[190px] shrink-0 snap-start flex flex-col">
               <ProductCard
                 product={p}
                 isInCart={cartProductIds.includes(p.id)}
