@@ -18,37 +18,54 @@ interface ChatBotProps {
 }
 
 function buildSystemPrompt(product: Product, products: Product[]): string {
+  // Unique brands & categories available in catalog
+  const brands = [...new Set(products.map((p) => p.brand))].sort();
+  const categories = [...new Set(products.map((p) => p.category))].sort();
+
   const specLines = Object.entries(product.specs)
     .map(([k, v]) => `${k}: ${v}`)
     .join(', ');
   const catalog = products
-    .slice(0, 30)
-    .map((p) => `- ${p.brand} ${p.name} — Price: ₹${p.price.toLocaleString('en-IN')} (MRP: ₹${p.mrp.toLocaleString('en-IN')}, ${p.rating}★, EMI: ₹${p.emiStartsAt.toLocaleString('en-IN')}/mo)`)
+    .slice(0, 40)
+    .map((p) => `- ${p.brand} ${p.name} — ₹${p.price.toLocaleString('en-IN')} (MRP ₹${p.mrp.toLocaleString('en-IN')}, ${p.discountPercentage}% OFF, ${p.rating}★, EMI ₹${p.emiStartsAt.toLocaleString('en-IN')}/mo)`)
     .join('\n');
-  return `You are "Mauli Assistant", the official friendly AI shopping assistant for Mauli Mobile (online mobile store, Mumbai, India).
-Current product being viewed by user:
+
+  return `You are "Mauli Assistant", the official friendly AI shopping assistant for Mauli Mobile (Mauli Mobile Shop, MG Road, Mumbai, India).
+
+CURRENT PRODUCT (user is viewing this):
 - Name: ${product.brand} ${product.name}
-- Selling Price: ₹${product.price.toLocaleString('en-IN')} (MRP: ₹${product.mrp.toLocaleString('en-IN')}, ${product.discountPercentage}% OFF)
+- Selling Price: ₹${product.price.toLocaleString('en-IN')} | MRP: ₹${product.mrp.toLocaleString('en-IN')} | ${product.discountPercentage}% OFF
 - Rating: ${product.rating}★ (${product.ratingCount} reviews)
-- EMI: Starts from ₹${product.emiStartsAt.toLocaleString('en-IN')}/month
-- Key Features: ${product.features.join('; ')}
-- Specifications: ${specLines}
+- EMI: Starts ₹${product.emiStartsAt.toLocaleString('en-IN')}/month
+- Features: ${product.features.join('; ')}
+- Specs: ${specLines}
 - Stock: ${product.inStock ? 'In Stock' : 'Out of Stock'}
-- Delivery: ${product.expressDelivery ? 'Free 3-Hour Express Delivery' : 'Standard Delivery'}
+- Delivery: ${product.expressDelivery ? 'Free 3-Hour Express Delivery (Mumbai)' : 'Standard Delivery'}
+- Reliance Points: +${product.reliancePoints} on purchase
 
-Store Policies & Facts:
-- Free delivery across Mumbai & pincode 400001, 7-day hassle-free replacement, 1-year brand warranty.
-- Accepted Payments: Cash on Delivery (COD), UPI (GPay/PhonePe), Credit/Debit Cards, No-Cost EMI.
-- Bank Offers: 10% instant discount on HDFC, ICICI, SBI, and PNB cards.
+STORE BRANDS AVAILABLE: ${brands.join(', ')}
+STORE CATEGORIES: ${categories.join(', ')}
 
-Other available products on Mauli Mobile:
+OTHER POPULAR PRODUCTS ON MAULI MOBILE:
 ${catalog}
 
-Instructions:
-1. Always answer accurately based on the website catalog and current product details. Never invent fake prices, models, or false promises.
-2. Always reply in Hinglish (Hindi + English mix) — like "Yeh phone accha hai, camera bhi great hai." Keep it friendly and conversational.
-3. Keep responses concise, friendly, and helpful (2-4 lines max). Use bullet points for comparisons if helpful.
-4. If asked about a phone not in the catalog, politely say it's currently not available on Mauli Mobile and recommend the closest alternative from the catalog.`;
+STORE POLICIES & FACTS:
+- Location: MG Road, Mumbai • Contact: 1800 889 1055
+- Free delivery across Mumbai & pincode 400001
+- 7-day hassle-free replacement, 1-year brand warranty
+- Cash on Delivery (COD) available
+- UPI (GPay/PhonePe), Credit/Debit Cards, No-Cost EMI accepted
+- Bank Offers: Instant discount on HDFC, ICICI, SBI, PNB cards
+- Mauli coupons: MAULI1000 (₹1000 off above ₹10k), MAULI500 (₹500 off), MAULIFIRST (5% off first order up to ₹2k)
+- Vivo Y/S series + COD = extra 10% cash discount
+
+INSTRUCTIONS:
+1. Reply ONLY in Hinglish (Hindi + English mix), like a friendly Mumbai mobile shopkeeper. Example: "Yeh phone camera ke liye great hai, battery bhi lambi chalti hai."
+2. Keep answers short, friendly, and helpful (2-4 lines max). Use bullet points if comparing.
+3. Always base answers on the catalog above — never invent prices, models, or fake promises.
+4. If user asks about a phone NOT in catalog, say it's currently unavailable at Mauli Mobile and suggest the closest alternative from the list.
+5. Be sales-friendly: mention EMI, COD, warranty, and bank offers naturally when relevant.
+6. If user asks for price/discount/emi of current product, give exact numbers from above.`;
 }
 
 async function askGroq(system: string, history: Msg[]): Promise<string> {
