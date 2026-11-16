@@ -440,10 +440,16 @@ export default function App() {
       setFilter((prev) => ({ ...prev, brand: 'all' }));
       setBrowseMode(false);
     } else {
-      const hasProducts = ALL_PRODUCTS.some(
-        (p) => p.brand.toLowerCase() === brand.toLowerCase()
-      );
+      const bLower = brand.toLowerCase();
+      const hasProducts = ALL_PRODUCTS.some((p) => {
+        const pb = p.brand.toLowerCase();
+        if (pb === bLower) return true;
+        if (bLower === 'xiaomi' && (pb === 'mi' || pb === 'redmi' || p.name.toLowerCase().includes('redmi') || p.name.toLowerCase().includes('xiaomi'))) return true;
+        if (bLower === 'mi' && (pb === 'xiaomi' || pb === 'redmi' || p.name.toLowerCase().includes('redmi'))) return true;
+        return false;
+      });
       if (hasProducts) {
+        setSelectedCategory('all');
         setFilter((prev) => ({ ...prev, brand }));
       } else {
         setFilter((prev) => ({ ...prev, brand: 'all' }));
@@ -491,9 +497,15 @@ export default function App() {
           (p.subCategory && p.subCategory.toLowerCase().includes(q));
         if (!matches) return false;
       }
-      // Brand filter
-      if (filter.brand !== 'all' && p.brand.toLowerCase() !== filter.brand.toLowerCase()) {
-        return false;
+      // Brand filter (handles case insensitivity + Xiaomi/Mi/Redmi aliases)
+      if (filter.brand !== 'all') {
+        const bFilter = filter.brand.toLowerCase();
+        const pBrand = p.brand.toLowerCase();
+        const match =
+          pBrand === bFilter ||
+          (bFilter === 'xiaomi' && (pBrand === 'mi' || pBrand === 'redmi' || p.name.toLowerCase().includes('redmi') || p.name.toLowerCase().includes('xiaomi'))) ||
+          (bFilter === 'mi' && (pBrand === 'xiaomi' || pBrand === 'redmi' || p.name.toLowerCase().includes('redmi')));
+        if (!match) return false;
       }
       // Express delivery filter
       if (filter.expressOnly && !p.expressDelivery) {
@@ -703,14 +715,39 @@ export default function App() {
             ) : (
               /* Filtered / Other Categories View */
               <div className="max-w-[1400px] mx-auto px-3 sm:px-4 py-4 space-y-4">
-                {/* Promotional Hero Banners (Shown when exploring all products) */}
-                {!searchQuery && selectedCategory === 'all' && (
+                {/* Promotional Hero Banners (Shown only when exploring all products without brand filter) */}
+                {!searchQuery && selectedCategory === 'all' && filter.brand === 'all' && (
                   <>
                     <LandingHero slides={adminSlides} />
                     <HeroBanners banners={adminBanners} />
                     <TrustBar />
                     <DealsCountdown />
                   </>
+                )}
+
+                {/* Active brand banner / filter indicator */}
+                {filter.brand !== 'all' && (
+                  <div className="flex items-center justify-between bg-white px-4 py-3 rounded-xl border border-gray-100 shadow-xs">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-gray-500">Brand:</span>
+                      <span className="text-sm font-bold text-[#e42529] bg-red-50 px-3 py-1 rounded-full border border-red-100">
+                        {filter.brand === 'Xiaomi' ? 'Mi / Xiaomi' : filter.brand}
+                      </span>
+                      <span className="text-xs text-gray-500 font-medium">
+                        ({groupedProducts.length} {groupedProducts.length === 1 ? 'model' : 'models'} available)
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setFilter((prev) => ({ ...prev, brand: 'all' }));
+                        setSelectedCategory('mobiles');
+                        setBrowseMode(false);
+                      }}
+                      className="text-xs text-gray-500 hover:text-red-600 font-medium px-2 py-1 rounded-md hover:bg-gray-50 transition-colors cursor-pointer"
+                    >
+                      ✕ Clear filter
+                    </button>
+                  </div>
                 )}
 
                 {/* Sort control (Amazon-style, right aligned) */}

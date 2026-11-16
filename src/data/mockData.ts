@@ -1,5 +1,6 @@
 import { Product, Category, Banner, BankOffer } from '../types';
 import { OCT2026_CATALOG } from './oct2026Catalog';
+import { ALL_BRAND_NEW_PRODUCTS } from './brandProducts';
 
 export const CATEGORIES: Category[] = [
   {
@@ -802,6 +803,7 @@ export const VIVO_PRICE_LIST_PHONES: Product[] = [
 
 export const PRODUCTS: Product[] = [
   ...OCT2026_CATALOG,
+  ...ALL_BRAND_NEW_PRODUCTS,
   ...VIVO_PRICE_LIST_PHONES,
   ...BEST_SELLING_PHONES,
   ...MIDNIGHT_DISCOUNT_PHONES,
