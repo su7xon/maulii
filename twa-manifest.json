@@ -1,6 +1,6 @@
 {
   "packageId": "com.maulimobile.app",
-  "host": "www.maulimobile.in",
+  "host": "maulii.vercel.app",
   "name": "Mauli Mobile",
   "launcherName": "Mauli Mobile",
   "display": "standalone",
@@ -10,20 +10,20 @@
   "navigationColorDark": "#000000",
   "navigationDividerColor": "#000000",
   "navigationDividerColorDark": "#000000",
-  "backgroundColor": "#F2F4F8",
+  "backgroundColor": "#141414",
   "enableNotifications": false,
   "startUrl": "/",
-  "iconUrl": "https://www.maulimobile.in/icon-512.png",
-  "maskableIconUrl": "https://www.maulimobile.in/icon-512.png",
-  "signingKey": "./android/maulimobile.keystore",
+  "iconUrl": "https://maulii.vercel.app/icon-512.png",
+  "maskableIconUrl": "https://maulii.vercel.app/icon-512.png",
+  "signingKey": "./maulimobile.keystore",
   "signingKeyAlias": "maulimobile",
   "signingKeyPassword": "maulimobile",
   "signingKeyAliasPassword": "maulimobile",
-  "appVersionName": "1.0.0",
-  "appVersionCode": 2,
+  "appVersionName": "1.0.1",
+  "appVersionCode": 3,
   "shortcuts": [],
   "generatorApp": "bubblewrap-cli",
-  "webManifestUrl": "https://www.maulimobile.in/manifest.webmanifest",
+  "webManifestUrl": "https://maulii.vercel.app/manifest.webmanifest",
   "fallbackType": "customtabs",
   "features": {},
   "alphaDependencies": {
@@ -33,9 +33,15 @@
   "isChromeOSOnly": false,
   "isMetaQuest": false,
   "minSdkVersion": 24,
-  "orientation": "default",
-  "fingerprints": [],
-  "additionalTrustedOrigins": [],
+  "orientation": "portrait",
+  "fingerprints": [
+    {
+      "value": "21:39:21:54:3B:59:C9:6E:1E:DA:BC:92:60:8F:C0:96:94:7D:B0:AD:95:39:13:40:CB:1A:61:F2:44:EA:E4:A6"
+    }
+  ],
+  "additionalTrustedOrigins": [
+    "https://www.maulimobile.in"
+  ],
   "retainedBundles": [],
   "displayOverride": []
 }
