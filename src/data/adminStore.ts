@@ -95,6 +95,8 @@ const DEAD_IMAGE_FIX: Record<string, string> = {
   // id prefix below decides the best replacement.
   'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-s25-ultra-5g.jpg': 'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-s25-ultra-sm-s938.jpg',
   'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-s25-5g.jpg': 'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-s25-sm-s931.jpg',
+  'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-z-flip6-fe.jpg': 'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-z-flip6.jpg',
+  'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-s24-plus.jpg': 'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-s26-plus.jpg',
 };
 
 // Per-model image repairs for saved localStorage / cloud copies (id prefix gated,

@@ -145,14 +145,14 @@ const SAM_FOLD8 = 'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-z-fold8.jp
 const SAM_FLIP8 = 'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-z-flip8.jpg';
 const SAM_FOLD7 = 'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-z-fold7.jpg';
 const SAM_FLIP7 = 'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-z-flip7.jpg';
-const SAM_FLIP7FE = 'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-z-flip6-fe.jpg';
+const SAM_FLIP7FE = 'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-z-flip6.jpg';
 const SAM_S26U = 'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-s26-ultra.jpg';
 const SAM_S26P = 'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-s26-plus.jpg';
 const SAM_S26 = 'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-s26.jpg';
 const SAM_S26FE = 'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-s23-fe.jpg';
 const SAM_S25U = 'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-s25-ultra-sm-s938.jpg';
 const SAM_S25 = 'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-s25-sm-s931.jpg';
-const SAM_S25P = 'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-s24-plus.jpg';
+const SAM_S25P = 'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-s26-plus.jpg';
 const SAM_S25FE = 'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-s25-fe.jpg';
 const SAM_S25EDGE = 'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-s25-edge.jpg';
 const SAM_A = 'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-a16-5g.jpg';
@@ -173,12 +173,847 @@ const SAM_A37 = 'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-a37.jpg';
 const SAM_A57 = 'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-a57.jpg';
 
 export const SAMSUNG_OCT2026: Product[] = [
-  // Fold8 / Flip8 family (DP = dealer, MOP = customer; price=MOP)
-  // Fold7 / Flip7
-  // S26 series
-  // S25 series
-  // F series
-  // A series
+  // --- FOLD 8 / FLIP 8 FAMILY ---
+  mk(
+    'sam-zfold8ultra-12-256-oct26',
+    'Samsung',
+    'Samsung Galaxy Z Fold 8 Ultra 5G (12GB/256GB)',
+    199999,
+    219999,
+    SAM_FOLD8U,
+    'Graphite, Cream, Violet Shadow',
+    '12 GB',
+    '256 GB',
+    {
+      DP: '₹1,98,999',
+      Display: '8.0-inch Fold + 6.5-inch Cover',
+      Processor: 'Snapdragon 8 Elite Gen 5',
+      Camera: '200MP + 50MP UW + 10MP 3x',
+      Battery: '5000 mAh 45W',
+    },
+    'Ultra-premium foldable flagship with expansive 8-inch inner display, 200MP pro-grade camera, and next-gen Galaxy AI productivity tools.',
+    {
+      badge: 'ULTRA FOLD',
+      rating: 4.9,
+      ratingCount: 620,
+      bestPrice: 192999,
+      offerRibbon: '₹7,000 Bank Cashback + ₹12,000 Cash Upgrade',
+    }
+  ),
+  mk(
+    'sam-zfold8ultra-12-512-oct26',
+    'Samsung',
+    'Samsung Galaxy Z Fold 8 Ultra 5G (12GB/512GB)',
+    219999,
+    239999,
+    SAM_FOLD8U,
+    'Graphite, Cream, Violet Shadow',
+    '12 GB',
+    '512 GB',
+    {
+      DP: '₹2,18,999',
+      Display: '8.0-inch Dynamic AMOLED 2X',
+      Processor: 'Snapdragon 8 Elite Gen 5',
+      Camera: '200MP Pro-grade camera',
+      Battery: '5000 mAh 45W',
+    },
+    'Flagship 512GB ultra foldable with massive multitasking screen and pro-level titanium construction.',
+    {
+      badge: 'ULTRA FOLD',
+      rating: 4.9,
+      ratingCount: 480,
+      bestPrice: 212999,
+      offerRibbon: '₹7,000 Bank Cashback + ₹12,000 Cash Upgrade',
+    }
+  ),
+  mk(
+    'sam-zfold8ultra-16-1tb-oct26',
+    'Samsung',
+    'Samsung Galaxy Z Fold 8 Ultra 5G (16GB/1TB)',
+    259999,
+    279999,
+    SAM_FOLD8U,
+    'Graphite, Cream, Violet Shadow',
+    '16 GB',
+    '1 TB',
+    {
+      DP: '₹2,58,999',
+      Processor: 'Snapdragon 8 Elite Gen 5',
+      RAM: '16 GB',
+      Storage: '1 TB',
+      Battery: '5000 mAh 45W',
+    },
+    'Top-tier 1TB foldable powerhouse with 16GB RAM for ultimate mobile computing and media creation.',
+    {
+      badge: 'TOP FLAGSHIP',
+      rating: 5.0,
+      ratingCount: 220,
+      bestPrice: 252999,
+      offerRibbon: '₹7,000 Bank Cashback + ₹12,000 Cash Upgrade',
+    }
+  ),
+  mk(
+    'sam-zfold8-12-256-oct26',
+    'Samsung',
+    'Samsung Galaxy Z Fold 8 5G (12GB/256GB) - Wide Fold',
+    179999,
+    199999,
+    SAM_FOLD8,
+    'Graphite, Cream, Lavender',
+    '12 GB',
+    '256 GB',
+    {
+      DP: '₹1,78,999',
+      Display: '7.6-inch Fold 4:3 + 5.5-inch Cover',
+      Processor: 'Snapdragon 8 Elite Gen 5',
+      Camera: '50MP + 50MP UW Dual Flagship',
+      Battery: '4800 mAh 45W',
+    },
+    'Reimagined wide-aspect foldable giving standard smartphone comfort closed and tablet productivity open.',
+    {
+      badge: 'NEW SHAPE',
+      rating: 4.8,
+      ratingCount: 540,
+      bestPrice: 172999,
+      offerRibbon: '₹7,000 Bank Cashback + ₹12,000 Cash Upgrade',
+    }
+  ),
+  mk(
+    'sam-zfold8-12-512-oct26',
+    'Samsung',
+    'Samsung Galaxy Z Fold 8 5G (12GB/512GB) - Wide Fold',
+    199999,
+    219999,
+    SAM_FOLD8,
+    'Graphite, Cream, Lavender',
+    '12 GB',
+    '512 GB',
+    {
+      DP: '₹1,98,999',
+      Processor: 'Snapdragon 8 Elite Gen 5',
+      Battery: '4800 mAh 45W',
+    },
+    'Expansive 512GB wide-aspect foldable built with lighter Armor Aluminum and anti-reflective display.',
+    {
+      badge: 'NEW SHAPE',
+      rating: 4.8,
+      ratingCount: 390,
+      bestPrice: 192999,
+      offerRibbon: '₹7,000 Bank Cashback + ₹12,000 Cash Upgrade',
+    }
+  ),
+  mk(
+    'sam-zfold8-16-1tb-oct26',
+    'Samsung',
+    'Samsung Galaxy Z Fold 8 5G (16GB/1TB) - Wide Fold',
+    239999,
+    259999,
+    SAM_FOLD8,
+    'Graphite, Cream, Lavender, Pistachio',
+    '16 GB',
+    '1 TB',
+    {
+      DP: '₹2,38,999',
+      Processor: 'Snapdragon 8 Elite Gen 5',
+      RAM: '16 GB',
+      Storage: '1 TB',
+    },
+    'Maximum capacity 1TB wide foldable with 16GB RAM for intensive productivity and creative multitasking.',
+    {
+      rating: 4.9,
+      ratingCount: 190,
+      bestPrice: 232999,
+      offerRibbon: '₹7,000 Bank Cashback + ₹12,000 Cash Upgrade',
+    }
+  ),
+  mk(
+    'sam-zflip8-12-256-oct26',
+    'Samsung',
+    'Samsung Galaxy Z Flip 8 5G (12GB/256GB)',
+    124999,
+    139999,
+    SAM_FLIP8,
+    'Mint, Black, White',
+    '12 GB',
+    '256 GB',
+    {
+      DP: '₹1,23,999',
+      Processor: 'Snapdragon 8 Elite Gen 5',
+      Battery: '4300 mAh',
+      CoverScreen: 'Full Edge-to-Edge FlexWindow',
+    },
+    'Iconic clamshell flip phone featuring a full-bleed cover screen, pro camera zoom, and Galaxy AI photo tools.',
+    {
+      badge: 'FLIP',
+      rating: 4.7,
+      ratingCount: 820,
+      bestPrice: 120999,
+      offerRibbon: '₹4,000 Bank Cashback + Up to ₹19,000 Upgrade & Support',
+    }
+  ),
+  mk(
+    'sam-zflip8-12-512-oct26',
+    'Samsung',
+    'Samsung Galaxy Z Flip 8 5G (12GB/512GB)',
+    144999,
+    159999,
+    SAM_FLIP8,
+    'Mint, Black, White',
+    '12 GB',
+    '512 GB',
+    {
+      DP: '₹1,43,999',
+      Processor: 'Snapdragon 8 Elite Gen 5',
+      Storage: '512 GB',
+    },
+    'High-capacity 512GB compact flip smartphone delivering flagship performance in a pocket-sized form.',
+    {
+      badge: 'FLIP',
+      rating: 4.7,
+      ratingCount: 460,
+      bestPrice: 140999,
+      offerRibbon: '₹4,000 Bank Cashback + Up to ₹19,000 Upgrade & Support',
+    }
+  ),
+
+  // --- FOLD 7 / FLIP 7 FAMILY ---
+  mk(
+    'sam-zfold7-12-256-oct26',
+    'Samsung',
+    'Samsung Galaxy Z Fold 7 5G (12GB/256GB)',
+    174999,
+    189999,
+    SAM_FOLD7,
+    'Blue Shadow, Black',
+    '12 GB',
+    '256 GB',
+    {
+      DP: '₹1,73,999',
+      Processor: 'Snapdragon 8 Elite',
+      Camera: '200MP Main Camera',
+    },
+    'Proven flagship foldable with 200MP camera resolution, dual high-refresh rate displays, and S-Pen support.',
+    {
+      badge: 'FOLDABLE',
+      rating: 4.8,
+      ratingCount: 1100,
+      bestPrice: 167999,
+      offerRibbon: '₹7,000 Bank Cashback + ₹7,000 Upgrade Bonus',
+    }
+  ),
+  mk(
+    'sam-zfold7-12-512-oct26',
+    'Samsung',
+    'Samsung Galaxy Z Fold 7 5G (12GB/512GB)',
+    186999,
+    199999,
+    SAM_FOLD7,
+    'Blue Shadow, Black',
+    '12 GB',
+    '512 GB',
+    {
+      DP: '₹1,85,999',
+      Processor: 'Snapdragon 8 Elite',
+    },
+    'High-performance 512GB foldable phone with multitasking split-screen and Galaxy AI features.',
+    {
+      badge: 'FOLDABLE',
+      rating: 4.8,
+      ratingCount: 850,
+      bestPrice: 179999,
+      offerRibbon: '₹7,000 Bank Cashback + ₹7,000 Upgrade Bonus',
+    }
+  ),
+  mk(
+    'sam-zfold7-16-1tb-oct26',
+    'Samsung',
+    'Samsung Galaxy Z Fold 7 5G (16GB/1TB)',
+    216999,
+    229999,
+    SAM_FOLD7,
+    'Blue Shadow, Black',
+    '16 GB',
+    '1 TB',
+    {
+      DP: '₹2,15,999',
+      Processor: 'Snapdragon 8 Elite',
+      RAM: '16 GB',
+      Storage: '1 TB',
+    },
+    'Ultimate 1TB capacity model of Galaxy Z Fold 7 for business pros and creators.',
+    {
+      rating: 4.8,
+      ratingCount: 380,
+      bestPrice: 209999,
+      offerRibbon: '₹7,000 Bank Cashback + ₹7,000 Upgrade Bonus',
+    }
+  ),
+  mk(
+    'sam-zflip7-12-256-oct26',
+    'Samsung',
+    'Samsung Galaxy Z Flip 7 5G (12GB/256GB)',
+    109999,
+    124999,
+    SAM_FLIP7,
+    'Blue Shadow, Black, Coral',
+    '12 GB',
+    '256 GB',
+    {
+      DP: '₹1,08,999',
+      Processor: 'Snapdragon 8 Elite',
+    },
+    'Premium flip phone with full cover screen widget control, high-res selfie camera, and water resistance.',
+    {
+      badge: 'FLIP',
+      rating: 4.7,
+      ratingCount: 950,
+      bestPrice: 99999,
+      offerRibbon: 'Flat ₹10,000 Instant All Bank / UPI Cashback',
+    }
+  ),
+  mk(
+    'sam-zflip7-12-512-oct26',
+    'Samsung',
+    'Samsung Galaxy Z Flip 7 5G (12GB/512GB)',
+    121999,
+    134999,
+    SAM_FLIP7,
+    'Blue Shadow, Black, Coral',
+    '12 GB',
+    '512 GB',
+    {
+      DP: '₹1,20,999',
+      Processor: 'Snapdragon 8 Elite',
+    },
+    'Large-storage 512GB flip smartphone with vibrant Dynamic AMOLED 2X folding screen.',
+    {
+      badge: 'FLIP',
+      rating: 4.7,
+      ratingCount: 620,
+      bestPrice: 111999,
+      offerRibbon: 'Flat ₹10,000 Instant All Bank / UPI Cashback',
+    }
+  ),
+  mk(
+    'sam-zflip7fe-8-128-oct26',
+    'Samsung',
+    'Samsung Galaxy Z Flip 7 FE 5G (8GB/128GB)',
+    89999,
+    99999,
+    SAM_FLIP7FE,
+    'Black, White',
+    '8 GB',
+    '128 GB',
+    {
+      DP: '₹88,999',
+    },
+    'Accessible Fan Edition foldable bringing the iconic flip experience with durable hinge and Galaxy AI.',
+    {
+      badge: 'FLIP FE',
+      rating: 4.5,
+      ratingCount: 780,
+      bestPrice: 79999,
+      offerRibbon: 'Flat ₹10,000 EMI Cashback All Bank/UPI',
+    }
+  ),
+  mk(
+    'sam-zflip7fe-8-256-oct26',
+    'Samsung',
+    'Samsung Galaxy Z Flip 7 FE 5G (8GB/256GB)',
+    95999,
+    105999,
+    SAM_FLIP7FE,
+    'Black, White',
+    '8 GB',
+    '256 GB',
+    {
+      DP: '₹94,999',
+    },
+    '256GB Fan Edition flip smartphone combining stylish pocketable form factor with solid performance.',
+    {
+      badge: 'FLIP FE',
+      rating: 4.5,
+      ratingCount: 690,
+      bestPrice: 85999,
+      offerRibbon: 'Flat ₹10,000 EMI Cashback All Bank/UPI',
+    }
+  ),
+
+  // --- S26 SERIES ---
+  mk(
+    'sam-s26fe-8-128-oct26',
+    'Samsung',
+    'Samsung Galaxy S26 FE 5G (8GB/128GB)',
+    69999,
+    79999,
+    SAM_S26FE,
+    'Graphite, Blue',
+    '8 GB',
+    '128 GB',
+    {
+      DP: '₹68,999',
+    },
+    'Next-gen Fan Edition flagship with high-refresh AMOLED, pro triple cameras, and refined aluminum frame.',
+    {
+      badge: 'NEW S-SERIES',
+      rating: 4.5,
+      ratingCount: 840,
+    }
+  ),
+  mk(
+    'sam-s26fe-8-256-oct26',
+    'Samsung',
+    'Samsung Galaxy S26 FE 5G (8GB/256GB)',
+    79999,
+    89999,
+    SAM_S26FE,
+    'Graphite, Blue',
+    '8 GB',
+    '256 GB',
+    {
+      DP: '₹78,999',
+    },
+    '256GB flagship experience with enhanced battery life and intelligent Galaxy camera algorithms.',
+    {
+      badge: 'NEW S-SERIES',
+      rating: 4.5,
+      ratingCount: 720,
+      bestPrice: 72999,
+      offerRibbon: '₹7,000 Special Support Discount',
+    }
+  ),
+  mk(
+    'sam-s26-12-256-oct26',
+    'Samsung',
+    'Samsung Galaxy S26 5G (12GB/256GB)',
+    102999,
+    114999,
+    SAM_S26,
+    'Black, White, Blue',
+    '12 GB',
+    '256 GB',
+    {
+      DP: '₹1,01,999',
+    },
+    'Compact flagship with upgraded 12GB RAM, ultra-bright 120Hz display, and on-device Galaxy AI assistant.',
+    {
+      badge: 'FLAGSHIP',
+      rating: 4.7,
+      ratingCount: 650,
+      bestPrice: 89999,
+      offerRibbon: '₹13,000 Special Support Discount',
+    }
+  ),
+  mk(
+    'sam-s26-12-512-oct26',
+    'Samsung',
+    'Samsung Galaxy S26 5G (12GB/512GB)',
+    122999,
+    134999,
+    SAM_S26,
+    'Black, White, Blue',
+    '12 GB',
+    '512 GB',
+    {
+      DP: '₹1,21,999',
+    },
+    '512GB compact flagship offering huge storage in an ergonomic, premium IP68 water-resistant build.',
+    {
+      badge: 'FLAGSHIP',
+      rating: 4.7,
+      ratingCount: 420,
+      bestPrice: 109999,
+      offerRibbon: '₹13,000 Special Support Discount',
+    }
+  ),
+  mk(
+    'sam-s26plus-12-256-oct26',
+    'Samsung',
+    'Samsung Galaxy S26 Plus 5G (12GB/256GB)',
+    134999,
+    149999,
+    SAM_S26P,
+    'Black, White',
+    '12 GB',
+    '256 GB',
+    {
+      DP: '₹1,33,999',
+    },
+    'Large-screen flagship with bigger battery, 45W fast charging, and advanced thermal cooling.',
+    {
+      badge: 'FLAGSHIP+',
+      rating: 4.7,
+      ratingCount: 410,
+      offerRibbon: 'Multibuy Offer: Watch 8/9 & Buds 4 Pro',
+    }
+  ),
+  mk(
+    'sam-s26plus-12-512-oct26',
+    'Samsung',
+    'Samsung Galaxy S26 Plus 5G (12GB/512GB)',
+    154999,
+    169999,
+    SAM_S26P,
+    'Black, White',
+    '12 GB',
+    '512 GB',
+    {
+      DP: '₹1,53,999',
+    },
+    '512GB model of Galaxy S26 Plus for intensive entertainment, mobile gaming, and camera captures.',
+    {
+      badge: 'FLAGSHIP+',
+      rating: 4.7,
+      ratingCount: 310,
+      offerRibbon: 'Multibuy Offer: Watch 8/9 & Buds 4 Pro',
+    }
+  ),
+  mk(
+    'sam-s26ultra-12-256-oct26',
+    'Samsung',
+    'Samsung Galaxy S26 Ultra 5G (12GB/256GB) - S Pen',
+    154999,
+    174999,
+    SAM_S26U,
+    'Titanium Black, Grey',
+    '12 GB',
+    '256 GB',
+    {
+      DP: '₹1,53,999',
+    },
+    'Definitive titanium smartphone with built-in S-Pen, quad telephoto optics, and AI computational photography.',
+    {
+      badge: 'ULTRA',
+      rating: 4.9,
+      ratingCount: 820,
+      bestPrice: 139999,
+      offerRibbon: '₹15,000 Special Support Discount',
+    }
+  ),
+  mk(
+    'sam-s26ultra-12-512-oct26',
+    'Samsung',
+    'Samsung Galaxy S26 Ultra 5G (12GB/512GB) - S Pen',
+    174999,
+    194999,
+    SAM_S26U,
+    'Titanium Black, Grey',
+    '12 GB',
+    '512 GB',
+    {
+      DP: '₹1,73,999',
+    },
+    '512GB titanium power device with high-grade optical stabilization and Corning Armor anti-reflective glass.',
+    {
+      badge: 'ULTRA',
+      rating: 4.9,
+      ratingCount: 560,
+      bestPrice: 159999,
+      offerRibbon: '₹15,000 Special Support Discount',
+    }
+  ),
+  mk(
+    'sam-s26ultra-12-1tb-oct26',
+    'Samsung',
+    'Samsung Galaxy S26 Ultra 5G (12GB/1TB) - S Pen',
+    214999,
+    234999,
+    SAM_S26U,
+    'Titanium Black, Grey',
+    '12 GB',
+    '1 TB',
+    {
+      DP: '₹2,13,999',
+    },
+    'Massive 1TB edition of the S26 Ultra designed for professional 8K videographers and power creators.',
+    {
+      badge: 'ULTRA 1TB',
+      rating: 4.9,
+      ratingCount: 290,
+      bestPrice: 199999,
+      offerRibbon: '₹15,000 Special Support Discount',
+    }
+  ),
+
+  // --- S25 SERIES ---
+  mk(
+    'sam-s25fe-8-128-oct26',
+    'Samsung',
+    'Samsung Galaxy S25 FE 5G (8GB/128GB)',
+    59999,
+    69999,
+    SAM_S25FE,
+    'Blue, Black',
+    '8 GB',
+    '128 GB',
+    {
+      DP: '₹58,999',
+    },
+    'Galaxy AI fan edition phone with 120Hz display, premium Nightography, and fast wireless charging.',
+    {
+      badge: 'GALAXY AI',
+      rating: 4.5,
+      ratingCount: 1450,
+      bestPrice: 55999,
+      offerRibbon: '₹4,000 Instant All Bank / UPI Cashback',
+    }
+  ),
+  mk(
+    'sam-s25fe-8-256-oct26',
+    'Samsung',
+    'Samsung Galaxy S25 FE 5G (8GB/256GB)',
+    65999,
+    74999,
+    SAM_S25FE,
+    'Blue, Black',
+    '8 GB',
+    '256 GB',
+    {
+      DP: '₹64,999',
+    },
+    '256GB Fan Edition bringing generative photo editing and crisp AMOLED visuals at an attractive price.',
+    {
+      badge: 'GALAXY AI',
+      rating: 4.5,
+      ratingCount: 1200,
+      bestPrice: 64999,
+      offerRibbon: '₹1,000 Instant All Bank / UPI Cashback',
+    }
+  ),
+  mk(
+    'sam-s25fe-8-512-oct26',
+    'Samsung',
+    'Samsung Galaxy S25 FE 5G (8GB/512GB)',
+    77999,
+    86999,
+    SAM_S25FE,
+    'Blue, Black',
+    '8 GB',
+    '512 GB',
+    {
+      DP: '₹76,999',
+    },
+    '512GB Galaxy S25 FE ensuring plenty of space for photos, games, and offline 4K video downloads.',
+    {
+      rating: 4.5,
+      ratingCount: 840,
+    }
+  ),
+  mk(
+    'sam-s25-12-128-oct26',
+    'Samsung',
+    'Samsung Galaxy S25 5G (12GB/128GB)',
+    74999,
+    84999,
+    SAM_S25,
+    'Silver Shadow, Blue',
+    '12 GB',
+    '128 GB',
+    {
+      DP: '₹73,999',
+    },
+    'Sleek and compact S25 flagship equipped with full Galaxy AI suite and durable Armor Aluminum enclosure.',
+    {
+      badge: 'FLAGSHIP',
+      rating: 4.7,
+      ratingCount: 1120,
+    }
+  ),
+  mk(
+    'sam-s25-12-256-oct26',
+    'Samsung',
+    'Samsung Galaxy S25 5G (12GB/256GB)',
+    84999,
+    94999,
+    SAM_S25,
+    'Silver Shadow, Blue',
+    '12 GB',
+    '256 GB',
+    {
+      DP: '₹83,999',
+    },
+    'Popular 256GB variant of Galaxy S25 delivering ultra-smooth 120Hz display and high-detail night photos.',
+    {
+      badge: 'FLAGSHIP',
+      rating: 4.7,
+      ratingCount: 980,
+      bestPrice: 75999,
+      offerRibbon: '₹9,000 Instant All Bank / UPI Cashback',
+    }
+  ),
+  mk(
+    'sam-s25-12-512-oct26',
+    'Samsung',
+    'Samsung Galaxy S25 5G (12GB/512GB)',
+    104999,
+    114999,
+    SAM_S25,
+    'Silver Shadow, Blue',
+    '12 GB',
+    '512 GB',
+    {
+      DP: '₹1,03,999',
+    },
+    '512GB compact powerhouse with generous memory and instant Live Translate features.',
+    {
+      badge: 'FLAGSHIP',
+      rating: 4.7,
+      ratingCount: 710,
+      bestPrice: 92999,
+      offerRibbon: '₹12,000 Instant All Bank / UPI Cashback',
+    }
+  ),
+  mk(
+    'sam-s25plus-12-256-oct26',
+    'Samsung',
+    'Samsung Galaxy S25 Plus 5G (12GB/256GB)',
+    99999,
+    114999,
+    SAM_S25P,
+    'Silver Shadow',
+    '12 GB',
+    '256 GB',
+    {
+      DP: '₹98,999',
+    },
+    'Larger 6.7-inch QHD+ Dynamic AMOLED 2X display with 45W charging and flagship dual-engine processing.',
+    {
+      badge: 'FLAGSHIP+',
+      rating: 4.7,
+      ratingCount: 630,
+      bestPrice: 82999,
+      offerRibbon: 'Flat ₹17,000 Instant All Bank / UPI Cashback',
+    }
+  ),
+  mk(
+    'sam-s25plus-12-512-oct26',
+    'Samsung',
+    'Samsung Galaxy S25 Plus 5G (12GB/512GB)',
+    111999,
+    124999,
+    SAM_S25P,
+    'Silver Shadow',
+    '12 GB',
+    '512 GB',
+    {
+      DP: '₹1,10,999',
+    },
+    'High-capacity 512GB Plus flagship with stunning brightness and superior battery stamina.',
+    {
+      badge: 'FLAGSHIP+',
+      rating: 4.7,
+      ratingCount: 520,
+      bestPrice: 97999,
+      offerRibbon: 'Flat ₹14,000 Instant HDFC Bank Cashback',
+    }
+  ),
+  mk(
+    'sam-s25ultra-12-256-oct26',
+    'Samsung',
+    'Samsung Galaxy S25 Ultra 5G (12GB/256GB) - S Pen',
+    119999,
+    139999,
+    SAM_S25U,
+    'Titanium Black, Grey, White',
+    '12 GB',
+    '256 GB',
+    {
+      DP: '₹1,18,999',
+    },
+    'Titanium-clad Ultra flagship with 200MP sensor, integrated S-Pen stylus, and 100x Space Zoom capability.',
+    {
+      badge: 'ULTRA',
+      rating: 4.9,
+      ratingCount: 1420,
+      offerRibbon: 'Multibuy Offer: Watch 9 Ultra 2 & Buds 4 Pro',
+    }
+  ),
+  mk(
+    'sam-s25ultra-12-512-oct26',
+    'Samsung',
+    'Samsung Galaxy S25 Ultra 5G (12GB/512GB) - S Pen',
+    139999,
+    159999,
+    SAM_S25U,
+    'Titanium Black, Grey, White',
+    '12 GB',
+    '512 GB',
+    {
+      DP: '₹1,38,999',
+    },
+    '512GB Titanium Ultra smartphone providing endless storage for pro photos, RAW editing, and productivity.',
+    {
+      badge: 'ULTRA',
+      rating: 4.9,
+      ratingCount: 1100,
+      offerRibbon: 'Multibuy Offer: Watch 9 Ultra 2 & Buds 4 Pro',
+    }
+  ),
+  mk(
+    'sam-s25ultra-12-1tb-oct26',
+    'Samsung',
+    'Samsung Galaxy S25 Ultra 5G (12GB/1TB) - S Pen',
+    169999,
+    189999,
+    SAM_S25U,
+    'Titanium Black, Grey',
+    '12 GB',
+    '1 TB',
+    {
+      DP: '₹1,68,999',
+    },
+    'Top-tier 1TB Ultra edition for extreme power users, heavy gamers, and mobile videographers.',
+    {
+      badge: 'ULTRA 1TB',
+      rating: 4.9,
+      ratingCount: 520,
+      offerRibbon: 'Multibuy Offer: Watch 9 Ultra 2 & Buds 4 Pro',
+    }
+  ),
+  mk(
+    'sam-s25edge-12-256-oct26',
+    'Samsung',
+    'Samsung Galaxy S25 Edge 5G (12GB/256GB) - Slim',
+    109999,
+    124999,
+    SAM_S25EDGE,
+    'Titanium Silver',
+    '12 GB',
+    '256 GB',
+    {
+      DP: '₹1,08,999',
+    },
+    'Ultra-slim edge edition combining sleek titanium sides, edge-to-edge curved OLED, and flagship internals.',
+    {
+      badge: 'SLIM EDGE',
+      rating: 4.6,
+      ratingCount: 520,
+      bestPrice: 84999,
+      offerRibbon: '₹25,000 Special Support + Up to ₹12,000 Upgrade',
+    }
+  ),
+  mk(
+    'sam-s25edge-12-512-oct26',
+    'Samsung',
+    'Samsung Galaxy S25 Edge 5G (12GB/512GB) - Slim',
+    121999,
+    134999,
+    SAM_S25EDGE,
+    'Titanium Silver',
+    '12 GB',
+    '512 GB',
+    {
+      DP: '₹1,20,999',
+    },
+    '512GB slim profile edge device engineered for premium hand feel without compromising performance.',
+    {
+      badge: 'SLIM EDGE',
+      rating: 4.6,
+      ratingCount: 410,
+      bestPrice: 91999,
+      offerRibbon: '₹25,000 Special Support + ₹5,000 HDFC Cashback',
+    }
+  ),
 ];
 
 // Realme images (gsmarena slugs: 200-verified, variants reuse their own model's photo)
@@ -285,11 +1120,21 @@ const MODEL_IMAGE: Record<string, string> = {
   'sam-f36': SAM_F36,
   'sam-f56': SAM_F56,
   'sam-f70e': SAM_F70E,
-  'sam-s25edge': SAM_S25EDGE,
-  'sam-s25plus': SAM_S25P,
+  'sam-zfold8ultra': SAM_FOLD8U,
+  'sam-zfold8': SAM_FOLD8,
+  'sam-zflip8': SAM_FLIP8,
+  'sam-zfold7': SAM_FOLD7,
+  'sam-zflip7fe': SAM_FLIP7FE,
+  'sam-zflip7': SAM_FLIP7,
+  'sam-s26ultra': SAM_S26U,
   'sam-s26plus': SAM_S26P,
   'sam-s26fe': SAM_S26FE,
-  'sam-zflip7fe': SAM_FLIP7FE,
+  'sam-s26': SAM_S26,
+  'sam-s25ultra': SAM_S25U,
+  'sam-s25plus': SAM_S25P,
+  'sam-s25fe': SAM_S25FE,
+  'sam-s25edge': SAM_S25EDGE,
+  'sam-s25': SAM_S25,
   'realme-15-': REALME_15,
   'realme-15pro': REALME_15_PRO,
   'realme-15t': REALME_15T,
